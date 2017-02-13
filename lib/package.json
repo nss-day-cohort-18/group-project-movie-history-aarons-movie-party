@@ -8,7 +8,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "bootstrap": "^3.3.7",
+    "bootstrap": "^4.0.0-alpha",
     "browserify": "^14.0.0",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
