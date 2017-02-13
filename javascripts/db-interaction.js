@@ -1,5 +1,5 @@
-let $ = require('jquery'),
-    firebase = require('./firebaseConfig');
+
+ //let firebase = require('./firebaseConfig');
 
 // ****************************************
 // DB interaction using Firebase REST API
