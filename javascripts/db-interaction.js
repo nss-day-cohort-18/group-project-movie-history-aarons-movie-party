@@ -1,9 +1,16 @@
+let $ = require('jquery'),
+    firebase = require('./firebaseConfig');
 
-function searchOMDB(movie) {
+// ****************************************
+// DB interaction using Firebase REST API
+// ****************************************
+
+function searchOMDB (movie) {
 	return new Promise ( function ( resolve, reject ) {
 		$.ajax({
 			url: `http://www.omdbapi.com/?t=${movie}`
-		}).done(function(movieData){
+		}).done(
+			function (movieData) {
 			resolve(movieData);
 			console.log(movieData);
 		}).fail(function (error){
