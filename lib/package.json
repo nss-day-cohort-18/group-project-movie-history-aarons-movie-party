@@ -8,6 +8,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "bootstrap": "^3.3.7",
     "browserify": "^14.0.0",
     "firebase": "^3.6.9",
     "grunt": "^1.0.1",
