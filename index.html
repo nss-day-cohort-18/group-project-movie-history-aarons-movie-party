@@ -2,8 +2,9 @@
 <html>
 <head>
 	<title>Movie History Project</title>
+<!--	<link rel="stylesheet" type="text/css" href="dist/css/bootstrap.min.css"> -->
 
-	<link rel="stylesheet" type="text/css" href="dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 
@@ -15,30 +16,34 @@
 	      	<ul class="navbar-left">
 	      		<li id="find-new-movies"><a href="#" title="">Find New Movies</a></li>
 	      		<li>	|	</li>
-	   			<li id="search-your-movies"><a href="#" title="">Search Your Movies</a></li>	
+	   			<li id="search-your-movies"><a href="#" title="">Search Your Movies</a></li>
 	   		</ul>
 
 	   		<ul class="navbar-right">
-	        		<li id="auth-btn"><a href="#" title="">Sign In</a></li>
+	        		<li id="login-btn"><a href="#" title="">Sign In</a></li>
 	        		<li>	|	</li>
-	        		<li id="logout-btn"><a href="#" title="">Logout</a></li> 
+	        		<li id="logout-btn"><a href="#" title="">Sign Out</a></li> 
 	        </ul>
     	</div>
     </nav>
 
-    <div class="uiContainer row">
-      <section class="uiContainer--wrapper col s9">
-      </section>
+    <h2>Movie History</h2>
+
+    <div class="movie-container row"></div>
     </div>
 
   </div>
 
 
 
-<script src="dist/jquery.min.js"></script>
-<script src="dist/js/bootstrap.min.js"></script>
+<!-- <script src="dist/jquery.min.js"></script>
+<script src="dist/js/bootstrap.min.js"></script> -->
 
 <script src="dist/app.js"></script>
 
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script src="javascripts/db-interaction.js"></script>
+  
 </body>
 </html>
