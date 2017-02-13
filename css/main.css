@@ -11,6 +11,15 @@ nav li {
 
 a {
 	display: inline-block;
-	padding-top: 10%;
-	padding-bottom: 5%;
+
 }  
+
+.navbar-right {
+	margin-right: 3em;
+}
+
+.navbar-right,
+.navbar-left {
+	padding-top: 2%;
+	padding-bottom: 2%;
+}
