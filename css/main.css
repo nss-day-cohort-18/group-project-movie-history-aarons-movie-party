@@ -1,0 +1,16 @@
+nav {
+	margin-top: 30px;
+	border: 1px solid grey;
+}
+
+nav li {
+	list-style-type: none;
+	display: inline-block;
+	padding-left: .5em;
+}
+
+a {
+	display: inline-block;
+	padding-top: 10%;
+	padding-bottom: 5%;
+}  
