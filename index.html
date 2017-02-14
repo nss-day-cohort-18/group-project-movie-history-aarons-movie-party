@@ -9,27 +9,37 @@
 <body>
 	<div class="container">
 
-    <nav class="row">
-    	<div class="nav-wrapper">
-	      	<div class="navbar-left">
-	      		<label>Search:</label>
-	      		<input id="userInput" placeholder="Search OMDb and your tracked movies..." type="text" name="movie-search">
-	   		</div>
+	    <nav class="row">
+	    	<div class="nav-wrapper">
+		      	<div class="navbar-left">
+		      		<label>Search:</label>
+		      		<input id="userInput" placeholder="Search OMDb and your tracked movies..." type="text" name="movie-search">
+		   		</div>
 
-	   		<ul class="navbar-right">
-		        	<li id="login-btn"><a href="#" title="">Sign In</a></li>
-		        	<li>	|	</li>
-		        	<li id="logout-btn"><a href="#" title="">Sign Out</a></li> 
-	        </ul>
-    	</div>
-    </nav>
+		   		<ul class="navbar-right">
+			        	<li id="login-btn"><a href="#" title="">Sign In</a></li>
+			        	<li>	|	</li>
+			        	<li id="logout-btn"><a href="#" title="">Sign Out</a></li> 
+		        </ul>
+	    	</div>
+	    </nav>
 
-    <h2>Movie History</h2>
+	    <h2>Movie History > </h2>
 
-    <div class="movie-container row"></div>
-    </div>
+		<div id="filterButtonContainer">
+		    <button role="presentation" class="filterButtons">Show Untracked</button>
+		    <button class="filterButtons">Show Unwatched</button>
+		    <button class="filterButtons">Show Watched</button>
+		    <button class="filterButtons">Favorites</button>
+		</div>
 
-  </div>
+	    <div class="movieRow row">
+	    	<section class="movieWrapper col-xs-3">
+	    		
+	    	</section>
+	    </div>
+
+ 	</div>
 
 
 
