@@ -14,8 +14,8 @@
 function searchOMDB (movie) {
 	return new Promise ( function ( resolve, reject ) {
 		$.ajax({
-			url: `http://www.omdbapi.com/?t=${movie}`,
-			method: 'get'
+			url: `https://api.themoviedb.org/3/search/movie?api_key=2065b4d356548d79a5905b6401847709&query=${movie}`,
+			method: 'GET'
 		}).done(
 			function (movieData) {
 			resolve(movieData);
