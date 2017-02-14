@@ -12,10 +12,13 @@
 // ****************************************
 
 function searchOMDB (movie) {
+	console.log('inside search');
+	console.log(movie);
+	
 	return new Promise ( function ( resolve, reject ) {
 		$.ajax({
 			url: `https://api.themoviedb.org/3/search/movie?api_key=2065b4d356548d79a5905b6401847709&query=${movie}`,
-			method: 'GET'
+			type: 'GET'
 		}).done(
 			function (movieData) {
 			resolve(movieData);
