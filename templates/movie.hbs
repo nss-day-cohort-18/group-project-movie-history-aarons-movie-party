@@ -17,3 +17,17 @@ if we decide to use handlebars here is basic template from example
  </section>
 
 {{/each}} -->
+
+
+{{#each movies }}
+
+<section id='card--{{@index}}' class='card-wrapper'>
+
+<h5>{{Title}}</h5>
+<h5>{{Year}}</h5>
+<h5>{{Actors}}</h5>
+<h5>{{Plot}}</h5>
+
+</section>
+
+{{/each}}
