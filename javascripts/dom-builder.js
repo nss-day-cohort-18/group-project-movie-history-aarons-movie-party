@@ -8,11 +8,13 @@ function makeMovieList (movie) {
 			var currentMovie = movieList[x];
 			movierow.innerHTML += 
 							`
+
 							<div class="mainmoviecard col-md-4">
 							<div id="div--${currentMovie.id}" class="moviecard">
 								<p id="title--${currentMovie.id}">${currentMovie.title}</p>
 								<p id="release--${currentMovie.id}">${currentMovie.release_date}</p>
 								<p id="overview--${currentMovie.id}">${currentMovie.overview}</p>
+
 							</div>
 							<section class="moveleft"><a href="#" class="watchlist" id="link--${currentMovie.id}">
 							Add to Watchlist</a></section></div>`;

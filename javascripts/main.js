@@ -34,18 +34,27 @@ $('#searchmovies').keypress(function (event) {
 });
 
 $('#login-btn').click(function() {
-  console.log('clicked auth');
+  console.log('clicked login');
   user.logInGoogle()
   .then( function(result){
     console.log('result from login', result.user.uid);
     user.setUser(result.user.uid);
-   // $('#auth-btn').addClass('is-hidden');
-   // $('#logout').removeClass('is-hidden');
-    // loadMoviesToDOM();
+    // $('#auth-btn').addClass('is-hidden');
+    // $('#logout=btn').removeClass('is-hidden');
+    loadMoviesToDOM();
   });
 });
 
+
+$('#logout-btn').click(function() {
+  console.log('clicked logout');
+  user.logOut();
+  console.log('user logged out');
+  });
+
+
   // console.log("event: ", event.target, "currenttarget", event.currentTarget);
+
 // Send newSong data to db then reload DOM with updated song data
 /* $(document).on("click", ".watchlist", function() {
   let movieObj = buildMovieObj();
