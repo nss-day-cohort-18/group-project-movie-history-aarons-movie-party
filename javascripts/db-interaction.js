@@ -14,8 +14,9 @@
 function searchOMDB (movie) {
 	return new Promise ( function ( resolve, reject ) {
 		$.ajax({
-			url: `http://www.omdbapi.com/?s=${movie}`,
-			method: 'get'
+			// url: `http://www.omdbapi.com/?s=${movie}`,
+			url: `http://api.themoviedb.org/3/search/movie?api_key=2a62380b482d755f1c2ef40b93cfc610&query=${movie}`,
+			type: 'GET'
 		}).done(
 			function (movieData) {
 			resolve(movieData);
@@ -24,6 +25,7 @@ function searchOMDB (movie) {
 		});
 	});
 }
+
 
 /*
  * Get the User's Movie List

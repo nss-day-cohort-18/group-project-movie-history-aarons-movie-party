@@ -13,6 +13,14 @@ function loadMoviesToDOM (movieInfo) {
 	$('.movie-container').append(movieDivCard);
 } */
 
+$('#searchmovies').keypress(function (event) {
+  if (event.which == 13) {
+    let movieSearchInput = document.getElementById('searchmovies').value;
+    // console.log(movieSearchInput);
+    db.searchOMDB(movieSearchInput);
+  }
+});
+
 
 function loadMoviesToDOM() {
   //console.log("Need to load some songs, Buddy");
@@ -30,12 +38,5 @@ function loadMoviesToDOM() {
 
 }
 
-loadMoviesToDOM();
+// loadMoviesToDOM();
 
-$('#searchmovies').keypress(function (event) {
-	if (event.which == 13) {
-		let movieSearchInput = document.getElementById('searchmovies').value;
-		console.log(movieSearchInput);
-		db.searchOMDB(movieSearchInput);
-	}
-});
