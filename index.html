@@ -2,43 +2,49 @@
 <html>
 <head>
 	<title>Movie History Project</title>
-	
-	<link rel="stylesheet" type="text/css" href="dist/css/bootstrap.min.css">
+
+	<link rel="stylesheet" type="text/css" href="dist/css/bootstrap.min.css"> 
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 
 <body>
 	<div class="container">
 
-    <nav class="row">
-    	<div class="nav-wrapper">
-	      	<ul class="navbar-left">
-	      		<li id="find-new-movies"><a href="#" title="">Find New Movies</a></li>
-	      		<li>	|	</li>
-	   			<li id="search-your-movies"><a href="#" title="">Search Your Movies</a></li>
-	   		</ul>
+	    <nav class="row">
+	    	<div class="nav-wrapper">
+		      	<div class="navbar-left">
+		      		<label>Search:</label>
+		      		<input id="userInput" placeholder="Search OMDb and your tracked movies..." type="text" name="movie-search">
+		   		</div>
 
-	   		<ul class="navbar-right">
-	        		<li id="login-btn"><a href="#" title="">Sign In</a></li>
-	        		<li>	|	</li>
-	        		<li id="logout-btn"><a href="#" title="">Sign Out</a></li> 
-	        </ul>
-    	</div>
-    </nav>
+		   		<ul class="navbar-right">
+			        	<li id="login-btn"><a href="#" title="">Sign In</a></li>
+			        	<li>	|	</li>
+			        	<li id="logout-btn"><a href="#" title="">Sign Out</a></li> 
+		        </ul>
+	    	</div>
+	    </nav>
 
-    <h2>Movie History</h2>
+	    <h2>Movie History > </h2>
 
-    <div class="movie-container row"></div>
-    	<input id="searchmovies">
-    </div>
+		<div id="filterButtonContainer">
+		    <button role="presentation" class="filterButtons">Show Untracked</button>
+		    <button class="filterButtons">Show Unwatched</button>
+		    <button class="filterButtons">Show Watched</button>
+		    <button class="filterButtons">Favorites</button>
+		</div>
 
-  </div>
+	    <div class="movieRow row">
+	    	<section class="movieWrapper col-xs-3">
+	    		
+	    	</section>
+	    </div>
 
+ 	</div>
 
-
-<script src="dist/jquery.min.js"></script>
-<script src="dist/js/bootstrap.min.js"></script>
-<script src="dist/app.js"></script>
+	<script src="dist/jquery.min.js"></script>
+	<script src="dist/js/bootstrap.min.js"></script>
+	<script src="dist/app.js"></script>
 
 </body>
 </html>
