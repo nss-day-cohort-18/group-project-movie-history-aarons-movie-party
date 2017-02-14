@@ -9,16 +9,3 @@ function getKey() {
 }
 
 module.exports = getKey;
-
-
-/*
-
-<script>
-  // Initialize Firebase
-  var config = {
-    storageBucket: "moviehistory-e4b18.appspot.com",
-    messagingSenderId: "534103746806"
-  };
-  firebase.initializeApp(config);
-</script> 
-*/
