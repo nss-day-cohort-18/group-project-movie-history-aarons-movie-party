@@ -45,28 +45,35 @@ $('#login-btn').click(function() {
   });
 });
 
+
 $('#logout-btn').click(function() {
   console.log('clicked logout');
   user.logOut();
   console.log('user logged out');
   });
 
+
+  // console.log("event: ", event.target, "currenttarget", event.currentTarget);
+
 // Send newSong data to db then reload DOM with updated song data
-$(document).on("click", ".watchlist", function() {
+/* $(document).on("click", ".watchlist", function() {
   let movieObj = buildMovieObj();
   db.addMovie(movieObj)
   .then( function(movieId){
     console.log(movieId);
    // loadMoviesToDOM();
   });
-});
+}); */
+
 
 function buildMovieObj() {
-    let className = $('.moviecard').attr('id');
+  //var id = $(".watchlist").closest("div").prop("id");
+  // console.log(id);
     let movieObj = {
-      title: $(className).html(),
+      title: $('.title').text(),
+      release_date: $('.release_date').text(),
+      overview: $('.overview').text(),
       uid: user.getUser()
   };
   return movieObj;
 }
-
