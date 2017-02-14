@@ -6,11 +6,31 @@ let db = require('./db-interaction'),
    	user = require('./user'),
    	firebase = require('./firebaseConfig');
 
+/*
 function loadMoviesToDOM (movieInfo) {
 	let movieDivCard = document.createElement('div');
 	movieDivCard.innerHTML = movieTemplate(movieInfo);
 	$('.movie-container').append(movieDivCard);
+} */
+
+
+function loadMoviesToDOM() {
+  //console.log("Need to load some songs, Buddy");
+  let currentUser = user.getUser();
+  db.getMovies(currentUser)
+  .then(function(movieData){
+    console.log("got data", movieData);
+   /*  var idArray = Object.keys(movieData);
+    idArray.forEach(function(key){
+      movieData[key].id = key;
+    }); */
+    console.log("movie object with id: ", movieData);
+    // templates.makeSongList(songData);
+  });
+
 }
+
+loadMoviesToDOM();
 
 $('#searchmovies').keypress(function (event) {
 	if (event.which == 13) {

@@ -14,7 +14,7 @@
 function searchOMDB (movie) {
 	return new Promise ( function ( resolve, reject ) {
 		$.ajax({
-			url: `http://www.omdbapi.com/?t=${movie}`,
+			url: `http://www.omdbapi.com/?s=${movie}`,
 			method: 'get'
 		}).done(
 			function (movieData) {
@@ -31,7 +31,7 @@ function searchOMDB (movie) {
 function getMovies (user) {
 	return new Promise(function(resolve, reject) {
 		$.ajax({
-			// url: `https://moviehistory-e4b18.firebaseio.com/movies.json?orderBy="uid"&equalTo="${user}"`
+			url: `https://moviehistory-e4b18.firebaseio.com/movies.json?orderBy="uid"&equalTo="${user}"`
 		}).done(function(movieData){
 			resolve(movieData);
 		}).fail( function(error){
