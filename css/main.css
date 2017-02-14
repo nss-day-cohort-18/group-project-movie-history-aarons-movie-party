@@ -39,3 +39,22 @@ input[type="text"] {
 	width: 40em;
 	max-width: 90%;
 }
+
+#filterButtonContainer {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.filterButtons {
+	background-color: white;
+	margin: 0 !important;
+
+}
+
+.filterButtons:hover {
+	background-color: lightblue;
+}
+
+.filterButtons:selected {
+	background-color: grey;
+}
