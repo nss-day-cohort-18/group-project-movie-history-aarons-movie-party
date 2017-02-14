@@ -1,7 +1,7 @@
 'use strict';
 
 
- //let firebase = require('./firebaseConfig');
+ let firebase = require('./firebaseConfig');
 /*
     apiKey: 'AIzaSyAjNt10LaBGKk5edTtotKiduJmaX4JT4zo',
     authDomain: 'moviehistory-e4b18.firebaseapp.com',
@@ -79,3 +79,10 @@ function getMovie (movieId) {
 }
 
 
+module.exports = {
+	searchOMDB,
+	getMovies,
+	addMovie,
+	deleteMovie,
+	getMovie
+};
