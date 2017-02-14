@@ -38,4 +38,5 @@ $('#searchmovies').keypress(function (event) {
 		console.log(movieSearchInput);
 		db.searchOMDB(movieSearchInput);
 	}
+
 });
