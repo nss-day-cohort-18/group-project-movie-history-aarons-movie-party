@@ -38,7 +38,8 @@ $('#searchmovies').keypress(function (event) {
 		console.log(movieSearchInput);
 		db.searchOMDB(movieSearchInput)
     .then( function(resolve) {
-      console.log(resolve);
+      // console.log(resolve);
+      templates.makeMovieList(resolve);
     });
 	}
 
