@@ -46,7 +46,6 @@ function getMovies (user) {
 function addMovie (movieFormObj) {
 	console.log('add movie', movieFormObj);
 	return new Promise ( function (resolve, reject ) {
-
 		$.ajax ( {
 			url: 'https://moviehistory-e4b18.firebaseio.com/movies.json',
 			type: 'POST',
@@ -57,6 +56,7 @@ function addMovie (movieFormObj) {
 		});
 	});
 }
+
 
 function deleteMovie (movieId) {
 	return new Promise ( function ( resolve, reject ) {
