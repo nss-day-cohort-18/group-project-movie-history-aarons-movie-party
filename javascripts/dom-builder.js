@@ -7,7 +7,7 @@ function makeMovieList (movie) {
 		for (var x in movieList) {
 			movierow.innerHTML += 
 							`
-							<div class="mainmoviecard col-md-3">
+							<div class="mainmoviecard col-sm-4">
 							<div id="${movieList[x].id}" class="moviecard">
 								<p id="title">${movieList[x].title}</p>
 								<p id="release_date">${movieList[x].release_date}</p>
