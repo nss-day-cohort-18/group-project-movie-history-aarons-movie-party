@@ -16,7 +16,7 @@ function loadMoviesToDOM (movieInfo) {
 $('#searchmovies').keypress(function (event) {
   if (event.which == 13) {
     let movieSearchInput = document.getElementById('searchmovies').value;
-    // console.log(movieSearchInput);
+    console.log(movieSearchInput);
     db.searchOMDB(movieSearchInput);
   }
 });
