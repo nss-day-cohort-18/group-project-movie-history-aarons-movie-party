@@ -36,7 +36,10 @@ $('#searchmovies').keypress(function (event) {
 	if (event.which == 13) {
 		let movieSearchInput = document.getElementById('searchmovies').value;
 		console.log(movieSearchInput);
-		db.searchOMDB(movieSearchInput);
+		db.searchOMDB(movieSearchInput)
+    .then( function(resolve) {
+      console.log(resolve);
+    });
 	}
 
 });
