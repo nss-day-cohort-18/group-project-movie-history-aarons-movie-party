@@ -1,10 +1,10 @@
 'use strict';
 
-let db = require('./db-interaction'),
-   	templates = require('./dom-builder'),
-   	movieTemplate = require('../templates/movie.hbs'),
-   	user = require('./user'),
-   	firebase = require('./firebaseConfig');
+let db = require('./db-interaction.js'),
+   	templates = require('./dom-builder.js'),
+   	movieTemplate = require('./dom-builder.js'),
+   	user = require('./user.js'),
+   	firebase = require('./firebaseConfig.js');
 
 /*
 This function is used to save information from the movie card
@@ -36,20 +36,60 @@ function movieObjToFirebase(movieObj) {
 
 // }
 
+let formControl = (submitValue) => {
+  return new Promise((resolve) => {
+    $('.card').remove();
+    let yearPattern = /[0-9]/g;
+    let searchValues = submitValue.split(" ");
+    let yearValues = [];
+    let keyWordValues = [];
+    for (var search = 0; search < searchValues.length; search++) {
+      if (searchValues[search].length === 4 && searchValues[search].match(yearPattern)) {
+        yearValues.push(searchValues[search]);
+      } else {
+        keyWordValues.push(searchValues[search]);
+      }
+    }
+    //go to firebase to search related movies
+    // readFirebase.readMovies();
+    //also go to movie load to compare movies with the api call
+
+    if (keyWordValues.length === 0) {
+      resolve(yearValues[0]);
+    } else {
+      if (yearValues.length === 0) {
+        resolve(submitValue);
+      } else {
+        resolve(keyWordValues.join(" "), yearValues[0]);
+      }
+    }
+  })
+};
+
 
 $('#searchmovies').keyup(function (event) {
   if (event.which === 13) {
+    $('#movierow').empty();
     let movieSearchInput = $('#searchmovies').val();
     console.log(movieSearchInput);
-    db.searchOMDB(movieSearchInput)
-      .then( 
+    formControl(movieSearchInput).then(
+        (movieValue) => db.searchOMDB(movieSearchInput)
+      ).then( 
         (movieData) => {
-          console.log(movieData);
-          db.addMovie(movieObjToFirebase(movieData.results[0]));
+          console.log("This is the movie-data", movieData);
+          // db.addMovie(movieObjToFirebase(movieData.results[0]));
+          // console.log(templates.cardMovieTemplate);
+          movieData.results.forEach(function(movie) {
+            templates.cardMovieTemplate(movie);
+          });
+          // templates.cardMovieTemplate(movieData.results[0]);
         }
     );
   }
 });
+
+
+
 
 
 $('#login-btn').click(function() {
