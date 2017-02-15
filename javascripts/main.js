@@ -63,13 +63,13 @@ let formControl = (submitValue) => {
         resolve(keyWordValues.join(" "), yearValues[0]);
       }
     }
-  })
+  });
 };
 
 
 $('#searchmovies').keyup(function (event) {
   if (event.which === 13) {
-    $('#movierow').empty();
+    $('.movies-list').empty();
     let movieSearchInput = $('#searchmovies').val();
     console.log(movieSearchInput);
     formControl(movieSearchInput).then(
@@ -92,7 +92,7 @@ $('#searchmovies').keyup(function (event) {
 
 
 
-$('#login-btn').click(function() {
+$('.login').click(function() {
   console.log('clicked login');
   user.logInGoogle()
   .then( 
@@ -112,7 +112,7 @@ $('#login-btn').click(function() {
 
 
 
-$('#logout-btn').click(function() {
+$('.logout').click(function() {
   console.log('clicked logout');
   user.logOut();
   console.log('user logged out');
