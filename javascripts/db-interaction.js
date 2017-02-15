@@ -36,60 +36,60 @@ function searchOMDB (movie) {
  * Get the User's Movie List
  */
 function getMovies (user) {
-	return new Promise(function(resolve, reject) {
-		$.ajax({
-			url: `https://moviehistory-e4b18.firebaseio.com/movies.json?orderBy="uid"&equalTo="${user}"`
-		}).done(function(movieData){
-			resolve(movieData);
-		}).fail( function(error){
-			reject(error);
-		});
-	});
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            url: `https://movie-history-team-team.firebaseio.com/movies.json?orderBy="uid"&equalTo="${user}"`
+        }).done(function(movieData){
+            resolve(movieData);
+        }).fail( function(error){
+            reject(error);
+        });
+    });
 }
 
 function addMovie (movieFormObj) {
-	console.log('add movie', movieFormObj);
-	return new Promise ( function (resolve, reject ) {
-		$.ajax ( {
-			url: 'https://moviehistory-e4b18.firebaseio.com/movies.json',
-			type: 'POST',
-			data: JSON.stringify(movieFormObj),
-			dataType: 'json'
-		}).done(function (movieId) {
-			resolve();
-		});
-	});
+    console.log('add movie', movieFormObj);
+    return new Promise ( function (resolve, reject ) {
+        $.ajax ( {
+            url: `https://movie-history-team-team.firebaseio.com/movies.json`,
+            type: 'POST',
+            data: JSON.stringify(movieFormObj),
+            dataType: 'json'
+        }).done(function (movieId) {
+            resolve();
+        });
+    });
 }
 
 
 function deleteMovie (movieId) {
-	return new Promise ( function ( resolve, reject ) {
-		$.ajax({
-			url: `https://moviehistory-e4b18.firebaseio.com/movies/${movieId}.json`,
-			method: 'DELETE'
-		}).done( function () {
-			resolve();
-		});
-	});
+    return new Promise ( function ( resolve, reject ) {
+        $.ajax({
+            url: `https://movie-history-team-team.firebaseio.com/movies/${movieId}.json`,
+            method: 'DELETE'
+        }).done( function () {
+            resolve();
+        });
+    });
 }
 
-function getMovie (movieId) {
-	return new Promise (function (resolve, reject) {
-		$.ajax ({
-			url: `https://moviehistory-e4b18.firebaseio.com/movies/${movieId}.json`,
-		}).done(function (movieData) {
-			resolve(movieData);
-		}).fail( function (error) {
-			reject (error);
-		});
-	});
-}
+// function getMovie (movieId) {
+//     return new Promise (function (resolve, reject) {
+//         $.ajax ({
+//             url: `https://moviehistory-e4b18.firebaseio.com/movies/${movieId}.json`,
+//         }).done(function (movieData) {
+//             resolve(movieData);
+//         }).fail( function (error) {
+//             reject (error);
+//         });
+//     });
+// }
 
 
 module.exports = {
-	searchOMDB,
-	getMovies,
-	addMovie,
-	deleteMovie,
-	getMovie
+    searchOMDB,
+    getMovies,
+    addMovie,
+    deleteMovie
+    // getMovie
 };
