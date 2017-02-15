@@ -1,5 +1,5 @@
 'use strict';
-
+// this builds to DOM
 function makeMovieList (movie) {
 	var movierow = document.getElementById('movierow');
 	for (var key in movie) {
@@ -10,9 +10,9 @@ function makeMovieList (movie) {
 							`
 							<div class="mainmoviecard col-md-4">
 							<div id="div--${currentMovie.id}" class="moviecard">
-								<p id="title--${currentMovie.id}">${currentMovie.title}</p>
-								<p id="release--${currentMovie.id}">${currentMovie.release_date}</p>
-								<p id="overview--${currentMovie.id}">${currentMovie.overview}</p>
+								<h4>${currentMovie.title}</h4>
+								<h5>${currentMovie.release_date}</h5>
+								<section>${currentMovie.overview}</section>
 							</div>
 							<section class="moveleft"><a href="#" class="watchlist" id="link--${currentMovie.id}">
 							Add to Watchlist</a></section></div>`;
@@ -28,9 +28,7 @@ function makeMovieList (movie) {
 
 }
 
-function myFunction () {
-	console.log(event.currentTarget.childNode[1]);
-}
+
 
 
 module.exports = {makeMovieList, myFunction};

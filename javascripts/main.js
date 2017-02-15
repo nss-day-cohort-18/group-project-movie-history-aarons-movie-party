@@ -45,25 +45,22 @@ $('#login-btn').click(function() {
   });
 });
 
-  // console.log("event: ", event.target, "currenttarget", event.currentTarget);
+
 // Send newSong data to db then reload DOM with updated song data
-/* $(document).on("click", ".watchlist", function() {
+$(document).on("click", ".watchlist", function() {
   let movieObj = buildMovieObj();
   db.addMovie(movieObj)
   .then( function(movieId){
     console.log(movieId);
    // loadMoviesToDOM();
   });
-}); */
-
+});
 
 function buildMovieObj() {
-  //var id = $(".watchlist").closest("div").prop("id");
-  // console.log(id);
     let movieObj = {
-      title: $('.title').text(),
-      release_date: $('.release_date').text(),
-      overview: $('.overview').text(),
+      title: obj_title,
+      release_date: release_date,
+      overview: overview,
       uid: user.getUser()
   };
   return movieObj;
