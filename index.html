@@ -1,48 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Movie History Project</title>
+    <title>Movie History Project</title>
 
-	<link rel="stylesheet" type="text/css" href="dist/css/bootstrap.min.css"> 
-	<link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 
 <body>
-	<div class="container">
+<div class="container my-container">
 
-	    <nav class="row">
-	    	<div class="nav-wrapper">
-		      	<div class="navbar-left">
-		      		<label>Search:</label>
-		      		<input id="searchmovies" placeholder="Search OMDb and your tracked movies..." type="text" name="movie-search">
-		   		</div>
+    <div class="nav-container">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                            aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
 
-		   		<ul class="navbar-right">
-			        <li id="login-btn"><a href="#" title="">Sign In</a></li>
-			        <li>	|	</li>
-			        <li id="logout-btn"><a href="#" title="">Sign Out</a></li> 
-		        </ul>
-	    	</div>
-	    </nav>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <div class="navbar-form navbar-left">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search">
+                        </div>
+                        <button type="button" class="btn form-control-btn btn-default">Submit</button>
+                    </div>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="login"><a href="#">Login</a></li>
+                        <li class="register"><a href="#">Register</a></li>
+                        <li class="logout"><a href="#">Logout</a></li>
+                    </ul>
+                </div><!-- End of navbar-collapse -->
+            </div><!-- End of container-fluid -->
+        </nav> <!-- End of navbar -->
+    </div> <!-- End of nav-container -->
 
-	    <h2>Movie History > </h2>
+    <div class="filter-container">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default btn-primary">All</button>
+            <button type="button" class="btn btn-default">Untracked</button>
+            <button type="button" class="btn btn-default">Tracked</button>
+            <button type="button" class="btn btn-default">Watched</button>
+        </div>
+    </div> <!-- End of filter-container -->
 
-		<div id="filterButtonContainer">
-		    <button role="presentation" class="filterButtons">Show Untracked</button>
-		    <button class="filterButtons">Show Unwatched</button>
-		    <button class="filterButtons">Show Watched</button>
-		    <button class="filterButtons">Show Favorites</button>
-		</div>
+    <div class="cards-container">
+        <div class="row movies-list">
+            <div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
+                <div class="thumbnail">
+                    <img src="https://image.tmdb.org/t/p/w500/ec1m7YgBYb4os06OSNW3QBaNYqZ.jpg" alt="Movie image ${cardItems.title}">
+                    <div class="caption">
+                        <h3>Rambo V</h3>
+                        <h3>2009</h3>
+                        <h3>Popularity: </h3>
+                        <hr>
+                        <div class="group-star">
+                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="1"></span>
+                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="2"></span>
+                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="3"></span>
+                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="4"></span>
+                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="5"></span>
+                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="6"></span>
+                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="7"></span>
+                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="8"></span>
+                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="9"></span>
+                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="10"></span>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End of card -->
+        </div> <!-- End of movies-list -->
+    </div> <!-- End of card-container -->
+</div> <!-- End of main container -->
 
-	    <div id="movierow" class="row">
-
-	    </div>
-
- 	</div>
-
-	<script src="dist/jquery.min.js"></script>
-	<script src="dist/js/bootstrap.min.js"></script>
-	<script src="dist/app.js"></script>
+<script src="dist/jquery.min.js"></script>
+<script src="dist/js/bootstrap.min.js"></script>
+<script src="dist/app.js"></script>
 
 </body>
 </html>
