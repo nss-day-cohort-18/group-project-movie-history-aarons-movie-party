@@ -9,29 +9,46 @@ let db = require('./db-interaction'),
 
 function loadMoviesToDOM() {
   //console.log("Need to load some songs, Buddy");
+  //Jordan and Aaron were trying to connect to firebase from here
   let currentUser = user.getUser();
-  db.getMovies(currentUser)
-  .then(function(movieData){
-    // console.log("got data", movieData);
-   /* var idArray = Object.keys(movieData);
-    idArray.forEach(function(key){
-      movieData[key].id = key;
-    }); 
-    console.log("movie object with id: ", movieData); 
-    templates.makeMovieList(movieData); */
-  });
+  db.getMovies(currentUser);
+  //then populate the DOM with movies
+  // .then(function(buildMovieObj()){
+  // });
 
 }
 
-$('#searchmovies').keypress(function (event) {
-	if (event.which == 13) {
-		let movieSearchInput = document.getElementById('searchmovies').value;
+
+/*
+This function is used to save information from the movie card
+whenever it is selected. It will create an object and push it to be 
+saved within FB.
+*/
+// function movieObjToFirebase(movieObj) {
+//     let movieObj = {
+//       title: obj_title,
+//       release_date: release_date,
+//       overview: overview,
+//       uid: user.getUser()
+//   };
+//   return movieObj;
+// }
+
+
+$('#searchmovies').keyup(function (event) {
+	if (event.which === 13) {
+		let movieSearchInput = $('#searchmovies').val();
+    console.log(movieSearchInput);
 		db.searchOMDB(movieSearchInput)
-    .then( function(resolve) {
-      templates.makeMovieList(resolve);
-    });
-	}
+      .then( 
+        (movieData) => console.log(movieData)
+ //      templates.makeMovieList(resolve);
+ //    });
+	// }
+    );
+  }
 });
+
 
 $('#login-btn').click(function() {
   console.log('clicked login');
@@ -53,22 +70,12 @@ $('#logout-btn').click(function() {
   console.log('user logged out');
   });
 
-// Send newSong data to db then reload DOM with updated song data
-$(document).on("click", ".watchlist", function() {
-  let movieObj = buildMovieObj();
-  db.addMovie(movieObj)
-  .then( function(movieId){
-    console.log(movieId);
-   // loadMoviesToDOM();
-  });
-});
-
-function buildMovieObj() {
-    let movieObj = {
-      title: obj_title,
-      release_date: release_date,
-      overview: overview,
-      uid: user.getUser()
-  };
-  return movieObj;
-}
+// // Send newSong data to db then reload DOM with updated song data
+// $(document).on("click", ".watchlist", function() {
+//   let movieObj = buildMovieObj();
+//   db.addMovie(movieObj)
+//   .then( function(movieId){
+//     console.log(movieId);
+//    // loadMoviesToDOM();
+//   });
+// });

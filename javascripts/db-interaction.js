@@ -1,7 +1,10 @@
 'use strict';
 
 
- let firebase = require('./firebaseConfig');
+let firebase = require('./firebaseConfig'),
+        movieGetter = require('./movie-getter.js'),
+        movieAPI = movieGetter();
+        // fb = firebase();
 /*
     apiKey: 'AIzaSyAjNt10LaBGKk5edTtotKiduJmaX4JT4zo',
     authDomain: 'moviehistory-e4b18.firebaseapp.com',
@@ -12,20 +15,21 @@
 // ****************************************
 
 function searchOMDB (movie) {
-	console.log('inside search');
-	console.log(movie);
-	
-	return new Promise ( function ( resolve, reject ) {
-		$.ajax({
-			url: `https://api.themoviedb.org/3/search/movie?api_key=2065b4d356548d79a5905b6401847709&query=${movie}`,
-			type: 'GET'
-		}).done(
-			function (movieData) {
-			resolve(movieData);
-		}).fail(function (error){
-			reject(error);
-		});
-	});
+    console.log('inside search');
+    console.log(movie);
+    
+    return new Promise ( function ( resolve, reject ) {
+        $.ajax({
+            url: movieAPI.MDBurl,
+            type: 'GET',
+            data: { query: movie, append_to_response: "images", include_image_language: "en"}
+        }).done(
+            function (movieData) {
+            resolve(movieData);
+        }).fail(function (error){
+            reject(error);
+        });
+    });
 }
 
 /*
