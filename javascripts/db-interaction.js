@@ -16,7 +16,6 @@ let firebase = require('./firebaseConfig'),
 
 function searchOMDB (movie) {
     console.log('inside search');
-    console.log(movie);
     
     return new Promise ( function ( resolve, reject ) {
         $.ajax({
