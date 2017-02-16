@@ -23,9 +23,8 @@ function searchOMDB (movie) {
             type: 'GET',
             data: { query: movie, append_to_response: "images", include_image_language: "en"}
         }).done(
-            function (movieData) {
-            resolve(movieData);
-        }).fail(function (error){
+            (movieData) => resolve(movieData)
+        ).fail(function (error){
             reject(error);
         });
     });
@@ -71,19 +70,6 @@ function deleteMovie (movieId) {
         });
     });
 }
-
-// function getMovie (movieId) {
-//     return new Promise (function (resolve, reject) {
-//         $.ajax ({
-//             url: `https://moviehistory-e4b18.firebaseio.com/movies/${movieId}.json`,
-//         }).done(function (movieData) {
-//             resolve(movieData);
-//         }).fail( function (error) {
-//             reject (error);
-//         });
-//     });
-// }
-
 
 module.exports = {
     searchOMDB,

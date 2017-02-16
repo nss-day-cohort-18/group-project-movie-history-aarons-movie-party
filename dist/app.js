@@ -24,9 +24,8 @@ function searchOMDB (movie) {
             type: 'GET',
             data: { query: movie, append_to_response: "images", include_image_language: "en"}
         }).done(
-            function (movieData) {
-            resolve(movieData);
-        }).fail(function (error){
+            (movieData) => resolve(movieData)
+        ).fail(function (error){
             reject(error);
         });
     });
@@ -73,19 +72,6 @@ function deleteMovie (movieId) {
     });
 }
 
-// function getMovie (movieId) {
-//     return new Promise (function (resolve, reject) {
-//         $.ajax ({
-//             url: `https://moviehistory-e4b18.firebaseio.com/movies/${movieId}.json`,
-//         }).done(function (movieData) {
-//             resolve(movieData);
-//         }).fail( function (error) {
-//             reject (error);
-//         });
-//     });
-// }
-
-
 module.exports = {
     searchOMDB,
     getMovies,
@@ -93,7 +79,7 @@ module.exports = {
     deleteMovie
     // getMovie
 };
-},{"./firebaseConfig":4,"./movie-getter.js":6}],2:[function(require,module,exports){
+},{"./firebaseConfig":4,"./movie-getter.js":7}],2:[function(require,module,exports){
 'use strict';
 
 let cardMovieTemplate = function(movie) {
@@ -157,14 +143,92 @@ var config = {
 firebase.initializeApp(config);
 
 module.exports = firebase;
-},{"./fb-getter":3,"firebase/app":8,"firebase/auth":9,"firebase/database":10}],5:[function(require,module,exports){
+},{"./fb-getter":3,"firebase/app":9,"firebase/auth":10,"firebase/database":11}],5:[function(require,module,exports){
+"use strict";
+
+let localFB = [];
+let localAPI = [];
+
+function getLocalFB() {
+	return localFB;
+}
+
+function getLocalAPI() {
+	return localAPI;
+}
+
+function setLocalAPI(objARR) {
+	localAPI = objARR.results;
+}
+
+function setLocalFB(objARR) {
+    localFB = Object.values(objARR);
+}
+
+function addLocalFB(moveobj) {
+    localFB.push(moveobj);
+}
+
+function removeLocalFB(moveobj) {
+    for (var i = 0; i < localFB.length; i++) {
+        if (moveobj.id === localFB[i].id) {
+            localFB.splice(i, 1);
+        }
+    }
+}
+
+function concatFBAPI() {
+    console.log("Sort localFB and localAPI here");
+
+    // start with API call array of results
+    var comboArray = localAPI.concat(localFB);
+
+    // sort by title name
+    comboArray.sort(function(a, b) {
+  var nameA = a.title.toUpperCase();
+  var nameB = b.title.toUpperCase();
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+        return 0;
+    });
+
+    // if we find a duplicate and the duplicate has a uid do nothing
+    // if we find a duplicate without a uid, remove it
+    for (var n = 0; n < comboArray.length; n++) {
+
+        if (n !== (comboArray.length - 1) && comboArray[n].id === comboArray[n + 1].id && comboArray[n + 1].uid) {
+          console.log("2nd check has uid");
+        } else if (n !== (comboArray.length - 1) && comboArray[n].id === comboArray[n + 1].id && comboArray[n + 1].uid === undefined) {
+            comboArray.splice(n + 1, 1);
+        }
+        if (n !== 0 && comboArray[n].id === comboArray[n - 1].id && comboArray[n - 1].uid) {
+            console.log("2nd check has uid");
+        } else if (n !== 0 && comboArray[n].id === comboArray[n - 1].id && comboArray[n - 1].uid === undefined) {
+            comboArray.splice(n - 1, 1);
+        }
+        return comboArray;
+    }
+}
+
+module.exports = {setLocalAPI, addLocalFB, removeLocalFB, setLocalFB, concatFBAPI, getLocalAPI, getLocalFB};
+
+
+
+
+
+},{}],6:[function(require,module,exports){
 'use strict';
 
 let db = require('./db-interaction.js'),
    	templates = require('./dom-builder.js'),
    	movieTemplate = require('./dom-builder.js'),
    	user = require('./user.js'),
-   	firebase = require('./firebaseConfig.js');
+   	firebase = require('./firebaseConfig.js'),
+    storage = require('./localStorage.js');
 
 /*
 This function is used to save information from the movie card
@@ -175,7 +239,7 @@ function movieObjToFirebase(movieObj) {
   // return new Promise((resolve) => {
   let movie = {
     title: movieObj.original_title,
-    year: movieObj.release_date.slice(0, 4),
+    year: movieObj.release_date,
     overview: movieObj.overview,
     poster_path: movieObj.poster_path,
 
@@ -210,10 +274,7 @@ let formControl = (submitValue) => {
         keyWordValues.push(searchValues[search]);
       }
     }
-    //go to firebase to search related movies
-    // readFirebase.readMovies();
-    //also go to movie load to compare movies with the api call
-
+    
     if (keyWordValues.length === 0) {
       resolve(yearValues[0]);
     } else {
@@ -232,23 +293,25 @@ $('#searchmovies').keyup(function (event) {
     $('.movies-list').empty();
     let movieSearchInput = $('#searchmovies').val();
     console.log(movieSearchInput);
+
+
     formControl(movieSearchInput).then(
         (movieValue) => db.searchOMDB(movieSearchInput)
       ).then( 
         (movieData) => {
-          console.log("This is the movie-data", movieData);
-          // db.addMovie(movieObjToFirebase(movieData.results[0]));
-          // console.log(templates.cardMovieTemplate);
-          movieData.results.forEach(function(movie) {
+          storage.setLocalAPI(movieData);
+          console.log("This is the movie data from the API: ", movieData);
+          console.log("This is the movie-data", storage.getLocalAPI());
+          let combinedMoviesArray = storage.concatFBAPI();
+          console.log("These are my combined movies from main.js: ", combinedMoviesArray);
+          
+          combinedMoviesArray.forEach(function(movie) {
             templates.cardMovieTemplate(movie);
           });
-          // templates.cardMovieTemplate(movieData.results[0]);
         }
-    );
+      );
   }
 });
-
-
 
 
 
@@ -256,15 +319,15 @@ $('.login').click(function() {
   console.log('clicked login');
   user.logInGoogle()
   .then( 
-    (result) => {
-      user.setUser(result.user.uid);
-      // $('#auth-btn').addClass('is-hidden');
-      // $('#logout=btn').removeClass('is-hidden');
-      let myUID = user.getUser();
-      console.log("myUID: ", myUID);
-      let myMovies = db.getMovies(myUID);
-      console.log(myMovies);
-  });
+    (result) => user.setUser(result.user.uid)
+  ).then(
+    (myUID) => db.getMovies(myUID)
+  ).then(
+    (movieData) => {
+      storage.setLocalFB(movieData);
+      let myMovies = storage.getLocalFB();
+      console.log("These are my movies ", myMovies);}
+    );
 });
 
 
@@ -276,7 +339,7 @@ $('.logout').click(function() {
   console.log('clicked logout');
   user.logOut();
   console.log('user logged out');
-  });
+});
 
 // // Send newSong data to db then reload DOM with updated song data
 // $(document).on("click", ".watchlist", function() {
@@ -288,7 +351,7 @@ $('.logout').click(function() {
 //   });
 // });
 
-},{"./db-interaction.js":1,"./dom-builder.js":2,"./firebaseConfig.js":4,"./user.js":7}],6:[function(require,module,exports){
+},{"./db-interaction.js":1,"./dom-builder.js":2,"./firebaseConfig.js":4,"./localStorage.js":5,"./user.js":8}],7:[function(require,module,exports){
 "use strict";
 
 // keeps the api key secret from prying eyes
@@ -300,7 +363,7 @@ function getURL() {
 }
 
 module.exports = getURL;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 let firebase = require('./firebaseConfig'),
@@ -327,18 +390,23 @@ function logOut() {
 }
 
 function getUser() {
-	console.log("This is the current user from user.js: ", currentUser);
+	console.log("This is the current user from user.getUser(): ", currentUser);
 	return currentUser;
 }
 
 function setUser(val) {
-	currentUser = val;
+	return new Promise ((resolve) => {
+		currentUser = val;
+		let myUserId = getUser();
+		console.log("my user in user.setUser(): ", myUserId);
+		resolve(myUserId);
+	});
 }
 
 
 module.exports = {logInGoogle, logOut, getUser, setUser};
 
-},{"./firebaseConfig":4}],8:[function(require,module,exports){
+},{"./firebaseConfig":4}],9:[function(require,module,exports){
 (function (global){
 var firebase = (function(){
 /*! @license Firebase v3.6.9
@@ -374,7 +442,7 @@ return firebase;}).call(typeof global !== undefined ? global : typeof self !== u
 module.exports = firebase;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (global){
 var firebase = require('./app');
 (function(){
@@ -619,7 +687,7 @@ a,function(a,c){if("create"===a)try{c.auth()}catch(d){}});firebase.INTERNAL.exte
 module.exports = firebase.auth;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./app":8}],10:[function(require,module,exports){
+},{"./app":9}],11:[function(require,module,exports){
 (function (global){
 var firebase = require('./app');
 (function(){
@@ -887,4 +955,4 @@ d;return d.Ya},{Reference:U,Query:X,Database:Se,enableLogging:xc,INTERNAL:Y,TEST
 module.exports = firebase.database;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./app":8}]},{},[5]);
+},{"./app":9}]},{},[6]);

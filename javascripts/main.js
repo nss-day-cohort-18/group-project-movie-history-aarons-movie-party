@@ -4,7 +4,8 @@ let db = require('./db-interaction.js'),
    	templates = require('./dom-builder.js'),
    	movieTemplate = require('./dom-builder.js'),
    	user = require('./user.js'),
-   	firebase = require('./firebaseConfig.js');
+   	firebase = require('./firebaseConfig.js'),
+    storage = require('./localStorage.js');
 
 /*
 This function is used to save information from the movie card
@@ -15,7 +16,7 @@ function movieObjToFirebase(movieObj) {
   // return new Promise((resolve) => {
   let movie = {
     title: movieObj.original_title,
-    year: movieObj.release_date.slice(0, 4),
+    year: movieObj.release_date,
     overview: movieObj.overview,
     poster_path: movieObj.poster_path,
 
@@ -50,10 +51,7 @@ let formControl = (submitValue) => {
         keyWordValues.push(searchValues[search]);
       }
     }
-    //go to firebase to search related movies
-    // readFirebase.readMovies();
-    //also go to movie load to compare movies with the api call
-
+    
     if (keyWordValues.length === 0) {
       resolve(yearValues[0]);
     } else {
@@ -72,23 +70,25 @@ $('#searchmovies').keyup(function (event) {
     $('.movies-list').empty();
     let movieSearchInput = $('#searchmovies').val();
     console.log(movieSearchInput);
+
+
     formControl(movieSearchInput).then(
         (movieValue) => db.searchOMDB(movieSearchInput)
       ).then( 
         (movieData) => {
-          console.log("This is the movie-data", movieData);
-          // db.addMovie(movieObjToFirebase(movieData.results[0]));
-          // console.log(templates.cardMovieTemplate);
-          movieData.results.forEach(function(movie) {
+          storage.setLocalAPI(movieData);
+          console.log("This is the movie data from the API: ", movieData);
+          console.log("This is the movie-data", storage.getLocalAPI());
+          let combinedMoviesArray = storage.concatFBAPI();
+          console.log("These are my combined movies from main.js: ", combinedMoviesArray);
+          
+          combinedMoviesArray.forEach(function(movie) {
             templates.cardMovieTemplate(movie);
           });
-          // templates.cardMovieTemplate(movieData.results[0]);
         }
-    );
+      );
   }
 });
-
-
 
 
 
@@ -96,15 +96,15 @@ $('.login').click(function() {
   console.log('clicked login');
   user.logInGoogle()
   .then( 
-    (result) => {
-      user.setUser(result.user.uid);
-      // $('#auth-btn').addClass('is-hidden');
-      // $('#logout=btn').removeClass('is-hidden');
-      let myUID = user.getUser();
-      console.log("myUID: ", myUID);
-      let myMovies = db.getMovies(myUID);
-      console.log(myMovies);
-  });
+    (result) => user.setUser(result.user.uid)
+  ).then(
+    (myUID) => db.getMovies(myUID)
+  ).then(
+    (movieData) => {
+      storage.setLocalFB(movieData);
+      let myMovies = storage.getLocalFB();
+      console.log("These are my movies ", myMovies);}
+    );
 });
 
 
@@ -116,7 +116,7 @@ $('.logout').click(function() {
   console.log('clicked logout');
   user.logOut();
   console.log('user logged out');
-  });
+});
 
 // // Send newSong data to db then reload DOM with updated song data
 // $(document).on("click", ".watchlist", function() {

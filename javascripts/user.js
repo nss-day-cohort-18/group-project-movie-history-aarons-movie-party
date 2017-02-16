@@ -24,12 +24,17 @@ function logOut() {
 }
 
 function getUser() {
-	console.log("This is the current user from user.js: ", currentUser);
+	console.log("This is the current user from user.getUser(): ", currentUser);
 	return currentUser;
 }
 
 function setUser(val) {
-	currentUser = val;
+	return new Promise ((resolve) => {
+		currentUser = val;
+		let myUserId = getUser();
+		console.log("my user in user.setUser(): ", myUserId);
+		resolve(myUserId);
+	});
 }
 
 
