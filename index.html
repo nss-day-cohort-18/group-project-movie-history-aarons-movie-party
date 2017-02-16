@@ -4,6 +4,7 @@
     <title>Movie History Project</title>
 
     <link rel="stylesheet" type="text/css" href="dist/css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/css/bootstrap-slider.min.css">-->
     <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 
@@ -42,40 +43,43 @@
         </nav> <!-- End of navbar -->
     </div> <!-- End of nav-container -->
 
-    <div class="filter-container">
-        <div class="btn-group" role="group">
+    <div class="filter-container row">
+        <div class="btn-group col-lg-4" role="group">
+            <label>Filter Your Movies</label>
+            <br>
             <button type="button" class="btn btn-default btn-primary">All</button>
             <button type="button" class="btn btn-default">Untracked</button>
             <button type="button" class="btn btn-default">Tracked</button>
             <button type="button" class="btn btn-default">Watched</button>
         </div>
+        <div class="btn-group col-lg-3" role="group">
+            <label>Filter By Rating</label>
+            <br>
+            <input type="range" min="0" max="10" value="7">
+            <!--<span>Filter By Rating</span>-->
+            <!--<input type="range" value="">-->
+        </div>
+        <!--<div class="checkbox range-rating col-lg-6" role="group">-->
+            <!--<label for="rating-slider">Filter By Rating-->
+            <!--<input type="range" min="0" max="10" value="7" id="rating-slider" step="1" list="rating-slider"></label>-->
+        <!--</div>-->
     </div> <!-- End of filter-container -->
+    <hr>
 
     <div class="cards-container">
         <div class="row movies-list">
-            <div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
-                <div class="thumbnail">
-                    <img src="https://image.tmdb.org/t/p/w500/ec1m7YgBYb4os06OSNW3QBaNYqZ.jpg" alt="Movie image ${cardItems.title}">
-                    <div class="caption">
-                        <h3>Rambo V</h3>
-                        <h3>2009</h3>
-                        <h3>Popularity: </h3>
-                        <hr>
-                        <div class="group-star">
-                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="1"></span>
-                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="2"></span>
-                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="3"></span>
-                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="4"></span>
-                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="5"></span>
-                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="6"></span>
-                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="7"></span>
-                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="8"></span>
-                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="9"></span>
-                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="10"></span>
-                        </div>
-                    </div>
-                </div>
-            </div> <!-- End of card -->
+            <!--<div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">-->
+                <!--<div class="thumbnail">-->
+                    <!--<img src="https://image.tmdb.org/t/p/w500/ec1m7YgBYb4os06OSNW3QBaNYqZ.jpg" alt="Movie image ${cardItems.title}">-->
+                    <!--<div class="caption">-->
+                        <!--<h3>Rambo V</h3>-->
+                        <!--<h3>2009</h3>-->
+                        <!--<h3>Popularity: </h3>-->
+                        <!--<hr>-->
+
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div> &lt;!&ndash; End of card &ndash;&gt;-->
         </div> <!-- End of movies-list -->
     </div> <!-- End of card-container -->
 </div> <!-- End of main container -->

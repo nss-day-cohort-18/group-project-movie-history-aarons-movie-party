@@ -7,11 +7,12 @@ let db = require('./db-interaction.js'),
    	firebase = require('./firebaseConfig.js'),
     storage = require('./localStorage.js');
 
+
 /*
-This function is used to save information from the movie card
-whenever it is selected. It will create an object and push it to be 
-saved within FB.
-*/
+ This function is used to save information from the movie card
+ whenever it is selected. It will create an object and push it to be
+ saved within FB.
+ */
 function movieObjToFirebase(movieObj) {
   let movie = {
     title: movieObj.original_title,

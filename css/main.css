@@ -6,6 +6,19 @@
     font-size: 2em;
 }
 
+#ex1Slider .slider-selection {
+    background: #BABABA;
+}
+
+.card-clicked {
+    background-color: lightblue;
+    border: 1px dotted black;
+}
+
+.movie-tracked {
+    background-color: lightgray;
+    border: 1px solid darkgray;
+}
 /*nav {*/
 /*margin-top: 30px;*/
 /*border: 1px solid grey;*/

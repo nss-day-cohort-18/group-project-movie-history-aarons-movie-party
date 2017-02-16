@@ -103,17 +103,34 @@ let cardMovieTemplate = function(movie) {
             title: movie.title,
             year: movie.release_date.slice(0, 4),
             myRatings: movie.ratings,
-            popularity: Math.round(movie.popularity)
+            popularity: Math.round(movie.popularity),
+            tracked: movie.uid ? 'movie-tracked' : ''
         };
         //card-template
         let cardTemplate = `<div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
-                              <div class="thumbnail">
+                              <div class="thumbnail ${cardItems.tracked}">
                                 <img src="${cardItems.image}" alt="Movie image ${cardItems.title}">
                                 <div class="caption">
                                   <h3>${cardItems.title}</h3>
                                   <h3>${cardItems.year}</h3>
                                   <h3>${cardItems.popularity}</h3>
                                   <h3>${cardItems.myRatings}</h3>
+                                </div>
+                                <hr>
+                                <div class="group-star">
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="1"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="2"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="3"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="4"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="5"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="6"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="7"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="8"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="9"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="10"></span>
+                                </div>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" id="untrack">Untrack this movie</label>
                                 </div>
                               </div>
                             </div>`;
@@ -269,11 +286,12 @@ let db = require('./db-interaction.js'),
    	firebase = require('./firebaseConfig.js'),
     storage = require('./localStorage.js');
 
+
 /*
-This function is used to save information from the movie card
-whenever it is selected. It will create an object and push it to be 
-saved within FB.
-*/
+ This function is used to save information from the movie card
+ whenever it is selected. It will create an object and push it to be
+ saved within FB.
+ */
 function movieObjToFirebase(movieObj) {
   let movie = {
     title: movieObj.original_title,
@@ -394,6 +412,7 @@ $('.logout').click(function() {
   user.logOut();
   console.log('user logged out');
 });
+
 
 
 },{"./db-interaction.js":1,"./dom-builder.js":2,"./firebaseConfig.js":4,"./localStorage.js":5,"./user.js":8}],7:[function(require,module,exports){
