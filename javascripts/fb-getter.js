@@ -1,5 +1,8 @@
 'use strict';
 
+/*
+This file is only used for storing and returning all of our important firebase information
+*/
 function getKey() {
   return {
     apiKey: "AIzaSyCLx0Z7SXMAY97o9dudtojVqKrr58rtwno",

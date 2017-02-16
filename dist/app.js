@@ -96,6 +96,7 @@ module.exports = {
 let cardMovieTemplate = function(movie) {
     return new Promise(function(resolve, reject) {
 
+        //setting up structure for apending items to DOM
         let cardItems = {
             movieId: movie.id,
             image: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : './dist/images/image-not-available.jpg',
@@ -104,6 +105,7 @@ let cardMovieTemplate = function(movie) {
             myRatings: movie.ratings,
             popularity: Math.round(movie.popularity)
         };
+        //card-template
         let cardTemplate = `<div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
                               <div class="thumbnail">
                                 <img src="${cardItems.image}" alt="Movie image ${cardItems.title}">
@@ -126,6 +128,9 @@ module.exports = {cardMovieTemplate};
 },{}],3:[function(require,module,exports){
 'use strict';
 
+/*
+This file is only used for storing and returning all of our important firebase information
+*/
 function getKey() {
   return {
     apiKey: "AIzaSyCLx0Z7SXMAY97o9dudtojVqKrr58rtwno",
@@ -138,6 +143,12 @@ module.exports = getKey;
 },{}],4:[function(require,module,exports){
 'use strict';
 
+
+/*
+Firebase Config
+This is connected to our fb-getter.js to retrieve appropriate information
+for handling all firebase requests
+*/
 let firebase = require('firebase/app'),
    fb = require('./fb-getter'),
    fbData = fb();
@@ -157,29 +168,42 @@ module.exports = firebase;
 },{"./fb-getter":3,"firebase/app":9,"firebase/auth":10,"firebase/database":11}],5:[function(require,module,exports){
 "use strict";
 
+/*
+Arrays to hold both api returns as well as firebase returns
+*/
 let localFB = [];
 let localAPI = [];
 
+/*
+functions to return local arrays
+*/
 function getLocalFB() {
 	return localFB;
 }
-
 function getLocalAPI() {
 	return localAPI;
 }
 
+/*
+setting the local arrays from firebase and api
+*/
 function setLocalAPI(objARR) {
 	localAPI = objARR.results;
 }
-
 function setLocalFB(objARR) {
     localFB = Object.values(objARR);
 }
 
+/*
+adding movies to our local firebase array
+*/
 function addLocalFB(moveobj) {
     localFB.push(moveobj);
 }
 
+/*
+remove from local fb array
+*/
 function removeLocalFB(moveobj) {
     for (var i = 0; i < localFB.length; i++) {
         if (moveobj.id === localFB[i].id) {
@@ -188,6 +212,10 @@ function removeLocalFB(moveobj) {
     }
 }
 
+/*
+combining and filtering both firebase and api local arrays
+so there are no duplicates
+*/
 function concatFBAPI() {
     console.log("Sort localFB and localAPI here");
 
@@ -387,15 +415,6 @@ let firebase = require('./firebaseConfig'),
 	provider = new firebase.auth.GoogleAuthProvider(),
 	currentUser = null;
 
-// firebase.auth().onAuthStateChanged ( function(user) {
-// 	if (user) {
-// 		console.log("currentUser logged in: ", currentUser);
-// 		currentUser = user.uid;
-// 	} else {
-// 		currentUser = null;
-// 		console.log("currentUser not logged in");
-// 	}
-// });
 
 function logInGoogle() {
 	// console.log("This is the user: ", user);

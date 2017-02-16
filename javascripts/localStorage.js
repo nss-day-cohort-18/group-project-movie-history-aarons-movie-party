@@ -1,28 +1,41 @@
 "use strict";
 
+/*
+Arrays to hold both api returns as well as firebase returns
+*/
 let localFB = [];
 let localAPI = [];
 
+/*
+functions to return local arrays
+*/
 function getLocalFB() {
 	return localFB;
 }
-
 function getLocalAPI() {
 	return localAPI;
 }
 
+/*
+setting the local arrays from firebase and api
+*/
 function setLocalAPI(objARR) {
 	localAPI = objARR.results;
 }
-
 function setLocalFB(objARR) {
     localFB = Object.values(objARR);
 }
 
+/*
+adding movies to our local firebase array
+*/
 function addLocalFB(moveobj) {
     localFB.push(moveobj);
 }
 
+/*
+remove from local fb array
+*/
 function removeLocalFB(moveobj) {
     for (var i = 0; i < localFB.length; i++) {
         if (moveobj.id === localFB[i].id) {
@@ -31,6 +44,10 @@ function removeLocalFB(moveobj) {
     }
 }
 
+/*
+combining and filtering both firebase and api local arrays
+so there are no duplicates
+*/
 function concatFBAPI() {
     console.log("Sort localFB and localAPI here");
 
