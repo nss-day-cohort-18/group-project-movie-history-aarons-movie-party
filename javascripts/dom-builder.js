@@ -1,35 +1,31 @@
 'use strict';
-// this builds to DOM
-function makeMovieList (movie) {
-	var movierow = document.getElementById('movierow');
-	for (var key in movie) {
-		let movieList = movie[key];
-		for (var x in movieList) {
-			var currentMovie = movieList[x];
-			movierow.innerHTML += 
-							`
 
-							<div class="mainmoviecard col-md-4">
-							<div id="div--${currentMovie.id}" class="moviecard">
-								<h4>${currentMovie.title}</h4>
-								<h5>${currentMovie.release_date}</h5>
-								<section>${currentMovie.overview}</section>
-							</div>
-							<section class="moveleft"><a href="#" class="watchlist" id="link--${currentMovie.id}">
-							Add to Watchlist</a></section></div>`;
-					// event.current target is on ahref
-					// index.slice 
-		}
-		let cardContainer = document.getElementsByClassName("mainmoviecard");
-		for (var i = 0; i < cardContainer.length; i++) {
- 		 cardContainer[i].addEventListener('click', myFunction);
-		}
+let cardMovieTemplate = function(movie) {
+    return new Promise(function(resolve, reject) {
 
-	}
+        let cardItems = {
+            movieId: movie.id,
+            image: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : './dist/images/image-not-available.jpg',
+            title: movie.title,
+            year: movie.release_date.slice(0, 4),
+            myRatings: movie.ratings,
+            popularity: Math.round(movie.popularity)
+        };
+        let cardTemplate = `<div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
+                              <div class="thumbnail">
+                                <img src="${cardItems.image}" alt="Movie image ${cardItems.title}">
+                                <div class="caption">
+                                  <h3>${cardItems.title}</h3>
+                                  <h3>${cardItems.year}</h3>
+                                  <h3>${cardItems.popularity}</h3>
+                                  <h3>${cardItems.myRatings}</h3>
+                                </div>
+                              </div>
+                            </div>`;
+        $('.movies-list').append(cardTemplate);
+        resolve(cardTemplate);
+        reject();
+    });
+};
 
-}
-
-
-
-
-module.exports = {makeMovieList, myFunction};
+module.exports = {cardMovieTemplate};
