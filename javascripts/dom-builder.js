@@ -21,6 +21,22 @@ let cardMovieTemplate = function(movie) {
                                   <h3>${cardItems.popularity}</h3>
                                   <h3>${cardItems.myRatings}</h3>
                                 </div>
+                                <hr>
+                                <div class="group-star">
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="1"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="2"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="3"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="4"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="5"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="6"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="7"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="8"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="9"></span>
+                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="10"></span>
+                                </div>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" id="untrack">Untrack this movie</label>
+                                </div>
                               </div>
                             </div>`;
         $('.movies-list').append(cardTemplate);
