@@ -17,7 +17,7 @@ function movieObjToFirebase(movieObj) {
     title: movieObj.original_title,
     year: movieObj.release_date.slice(0, 4),
     overview: movieObj.overview,
-    poster: movieObj.poster_path,
+    poster_path: movieObj.poster_path,
 
     uid: user.getUser()
   };
