@@ -9,10 +9,11 @@ let cardMovieTemplate = function(movie) {
             title: movie.title,
             year: movie.release_date.slice(0, 4),
             myRatings: movie.ratings,
-            popularity: Math.round(movie.popularity)
+            popularity: Math.round(movie.popularity),
+            tracked: movie.uid ? 'movie-tracked' : ''
         };
         let cardTemplate = `<div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
-                              <div class="thumbnail">
+                              <div class="thumbnail ${cardItems.tracked}">
                                 <img src="${cardItems.image}" alt="Movie image ${cardItems.title}">
                                 <div class="caption">
                                   <h3>${cardItems.title}</h3>
