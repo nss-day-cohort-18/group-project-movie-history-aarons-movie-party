@@ -105,10 +105,11 @@ let cardMovieTemplate = function(movie) {
             title: movie.title,
             year: movie.release_date.slice(0, 4),
             myRatings: movie.ratings,
-            popularity: Math.round(movie.popularity)
+            popularity: Math.round(movie.popularity),
+            tracked: movie.uid ? 'movie-tracked' : ''
         };
         let cardTemplate = `<div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
-                              <div class="thumbnail">
+                              <div class="thumbnail ${cardItems.tracked}">
                                 <img src="${cardItems.image}" alt="Movie image ${cardItems.title}">
                                 <div class="caption">
                                   <h3>${cardItems.title}</h3>
@@ -161,27 +162,27 @@ module.exports = firebase;
 'use strict';
 
 let db = require('./db-interaction.js'),
-   	templates = require('./dom-builder.js'),
-   	movieTemplate = require('./dom-builder.js'),
-   	user = require('./user.js'),
-   	firebase = require('./firebaseConfig.js');
+    templates = require('./dom-builder.js'),
+    movieTemplate = require('./dom-builder.js'),
+    user = require('./user.js'),
+    firebase = require('./firebaseConfig.js');
 
 /*
-This function is used to save information from the movie card
-whenever it is selected. It will create an object and push it to be 
-saved within FB.
-*/
+ This function is used to save information from the movie card
+ whenever it is selected. It will create an object and push it to be
+ saved within FB.
+ */
 function movieObjToFirebase(movieObj) {
-  // return new Promise((resolve) => {
-  let movie = {
-    title: movieObj.original_title,
-    year: movieObj.release_date.slice(0, 4),
-    overview: movieObj.overview,
-    poster_path: movieObj.poster_path,
+    // return new Promise((resolve) => {
+    let movie = {
+        title: movieObj.original_title,
+        year: movieObj.release_date.slice(0, 4),
+        overview: movieObj.overview,
+        poster_path: movieObj.poster_path,
 
-    uid: user.getUser()
-  };
-  return movie;
+        uid: user.getUser()
+    };
+    return movie;
 }
 
 
@@ -189,7 +190,7 @@ function movieObjToFirebase(movieObj) {
 //   //console.log("Need to load some songs, Buddy");
 //   //Jordan and Aaron were trying to connect to firebase from here
 //   console.log("I am in loadMoviesToDom()");
-  
+
 //   //then populate the DOM with movies
 //   // .then(function(movieObjToFirebase()){
 //   // });
@@ -197,86 +198,79 @@ function movieObjToFirebase(movieObj) {
 // }
 
 let formControl = (submitValue) => {
-  return new Promise((resolve) => {
-    $('.card').remove();
-    let yearPattern = /[0-9]/g;
-    let searchValues = submitValue.split(" ");
-    let yearValues = [];
-    let keyWordValues = [];
-    for (var search = 0; search < searchValues.length; search++) {
-      if (searchValues[search].length === 4 && searchValues[search].match(yearPattern)) {
-        yearValues.push(searchValues[search]);
-      } else {
-        keyWordValues.push(searchValues[search]);
-      }
-    }
-    //go to firebase to search related movies
-    // readFirebase.readMovies();
-    //also go to movie load to compare movies with the api call
+    return new Promise((resolve) => {
+        $('.card').remove();
+        let yearPattern = /[0-9]/g;
+        let searchValues = submitValue.split(" ");
+        let yearValues = [];
+        let keyWordValues = [];
+        for(var search = 0; search < searchValues.length; search++) {
+            if(searchValues[search].length === 4 && searchValues[search].match(yearPattern)) {
+                yearValues.push(searchValues[search]);
+            } else {
+                keyWordValues.push(searchValues[search]);
+            }
+        }
+        //go to firebase to search related movies
+        // readFirebase.readMovies();
+        //also go to movie load to compare movies with the api call
 
-    if (keyWordValues.length === 0) {
-      resolve(yearValues[0]);
-    } else {
-      if (yearValues.length === 0) {
-        resolve(submitValue);
-      } else {
-        resolve(keyWordValues.join(" "), yearValues[0]);
-      }
-    }
-  });
+        if(keyWordValues.length === 0) {
+            resolve(yearValues[0]);
+        } else {
+            if(yearValues.length === 0) {
+                resolve(submitValue);
+            } else {
+                resolve(keyWordValues.join(" "), yearValues[0]);
+            }
+        }
+    });
 };
 
 
-$('#searchmovies').keyup(function (event) {
-  if (event.which === 13) {
-    $('.movies-list').empty();
-    let movieSearchInput = $('#searchmovies').val();
-    console.log(movieSearchInput);
-    formControl(movieSearchInput).then(
-        (movieValue) => db.searchOMDB(movieSearchInput)
-      ).then( 
-        (movieData) => {
-          console.log("This is the movie-data", movieData);
-          // db.addMovie(movieObjToFirebase(movieData.results[0]));
-          // console.log(templates.cardMovieTemplate);
-          movieData.results.forEach(function(movie) {
-            templates.cardMovieTemplate(movie);
-          });
-          // templates.cardMovieTemplate(movieData.results[0]);
-        }
-    );
-  }
+$('#searchmovies').keyup(function(event) {
+    if(event.which === 13) {
+        $('.movies-list').empty();
+        let movieSearchInput = $('#searchmovies').val();
+        console.log(movieSearchInput);
+        formControl(movieSearchInput).then(
+            (movieValue) => db.searchOMDB(movieSearchInput)
+        ).then(
+            (movieData) => {
+                console.log("This is the movie-data", movieData);
+                // db.addMovie(movieObjToFirebase(movieData.results[0]));
+                // console.log(templates.cardMovieTemplate);
+                movieData.results.forEach(function(movie) {
+                    templates.cardMovieTemplate(movie);
+                });
+                // templates.cardMovieTemplate(movieData.results[0]);
+            }
+        );
+    }
 });
-
-
-
 
 
 $('.login').click(function() {
-  console.log('clicked login');
-  user.logInGoogle()
-  .then( 
-    (result) => {
-      user.setUser(result.user.uid);
-      // $('#auth-btn').addClass('is-hidden');
-      // $('#logout=btn').removeClass('is-hidden');
-      let myUID = user.getUser();
-      console.log("myUID: ", myUID);
-      let myMovies = db.getMovies(myUID);
-      console.log(myMovies);
-  });
+    console.log('clicked login');
+    user.logInGoogle()
+        .then(
+            (result) => {
+                user.setUser(result.user.uid);
+                // $('#auth-btn').addClass('is-hidden');
+                // $('#logout=btn').removeClass('is-hidden');
+                let myUID = user.getUser();
+                console.log("myUID: ", myUID);
+                let myMovies = db.getMovies(myUID);
+                console.log(myMovies);
+            });
 });
 
 
-
-
-
-
 $('.logout').click(function() {
-  console.log('clicked logout');
-  user.logOut();
-  console.log('user logged out');
-  });
+    console.log('clicked logout');
+    user.logOut();
+    console.log('user logged out');
+});
 
 // // Send newSong data to db then reload DOM with updated song data
 // $(document).on("click", ".watchlist", function() {
