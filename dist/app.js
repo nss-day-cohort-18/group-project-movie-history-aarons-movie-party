@@ -15,9 +15,13 @@ let firebase = require('./firebaseConfig'),
 // DB interaction using Firebase REST API
 // ****************************************
 
+
+/*
+Setting up an ajax request to http://www.omdbapi.com/ 
+and grabbing an array of movie objects
+*/
 function searchOMDB (movie) {
     console.log('inside search');
-    
     return new Promise ( function ( resolve, reject ) {
         $.ajax({
             url: movieAPI.MDBurl,
@@ -31,8 +35,9 @@ function searchOMDB (movie) {
     });
 }
 
+
 /*
- * Get the User's Movie List
+ * Get the User's Movie List from Firebase
  */
 function getMovies (user) {
     return new Promise(function(resolve, reject) {
@@ -46,6 +51,10 @@ function getMovies (user) {
     });
 }
 
+
+/* 
+adding movies to firebase
+*/
 function addMovie (movieFormObj) {
     console.log('add movie', movieFormObj);
     return new Promise ( function (resolve, reject ) {
@@ -61,6 +70,9 @@ function addMovie (movieFormObj) {
 }
 
 
+/*
+deleting movies from firebase
+*/
 function deleteMovie (movieId) {
     return new Promise ( function ( resolve, reject ) {
         $.ajax({
@@ -77,7 +89,6 @@ module.exports = {
     getMovies,
     addMovie,
     deleteMovie
-    // getMovie
 };
 },{"./firebaseConfig":4,"./movie-getter.js":7}],2:[function(require,module,exports){
 'use strict';
@@ -236,7 +247,6 @@ whenever it is selected. It will create an object and push it to be
 saved within FB.
 */
 function movieObjToFirebase(movieObj) {
-  // return new Promise((resolve) => {
   let movie = {
     title: movieObj.original_title,
     year: movieObj.release_date,
@@ -248,25 +258,22 @@ function movieObjToFirebase(movieObj) {
   return movie;
 }
 
-
-// function loadMoviesToDOM() {
-//   //console.log("Need to load some songs, Buddy");
-//   //Jordan and Aaron were trying to connect to firebase from here
-//   console.log("I am in loadMoviesToDom()");
-  
-//   //then populate the DOM with movies
-//   // .then(function(movieObjToFirebase()){
-//   // });
-
-// }
-
+/* 
+Filters the search request so that you have the option to search 
+by keyword/title or by year no matter where they are at within the search
+*/
 let formControl = (submitValue) => {
   return new Promise((resolve) => {
+    //removes all movie cards from DOM
     $('.card').remove();
+    //set up pattern to search for the year
     let yearPattern = /[0-9]/g;
+    //split the submitValue by spaces
     let searchValues = submitValue.split(" ");
+    //set arrays to store year values and regular words
     let yearValues = [];
     let keyWordValues = [];
+    //Loop through searchValues array and find either year or title/keyword
     for (var search = 0; search < searchValues.length; search++) {
       if (searchValues[search].length === 4 && searchValues[search].match(yearPattern)) {
         yearValues.push(searchValues[search]);
@@ -288,23 +295,36 @@ let formControl = (submitValue) => {
 };
 
 
+/*
+takes the search input and filters it. From there it makes an api call, stores the api
+call, compares the api call to what is stored on our local firebase array, and sends the result to be
+printed to the DOM
+*/
 $('#searchmovies').keyup(function (event) {
+  //If it's the enter key..
   if (event.which === 13) {
+    //empty movies-list container
     $('.movies-list').empty();
+    //grab the value from the search
     let movieSearchInput = $('#searchmovies').val();
     console.log(movieSearchInput);
 
-
+    //send the result to be filtered
     formControl(movieSearchInput).then(
+        //take the value to api request
         (movieValue) => db.searchOMDB(movieSearchInput)
       ).then( 
+        //with the movie data..
         (movieData) => {
+          //store the data in our localAPI array
           storage.setLocalAPI(movieData);
           console.log("This is the movie data from the API: ", movieData);
           console.log("This is the movie-data", storage.getLocalAPI());
+          //combine both the local API array and the localFB array
           let combinedMoviesArray = storage.concatFBAPI();
           console.log("These are my combined movies from main.js: ", combinedMoviesArray);
           
+          //For each movie within the combined movie array, print it to the DOM
           combinedMoviesArray.forEach(function(movie) {
             templates.cardMovieTemplate(movie);
           });
@@ -314,15 +334,22 @@ $('#searchmovies').keyup(function (event) {
 });
 
 
-
+/*
+This function performs login tasks. Sign in using Google, makes a call to Firebase
+to store all movies from firebase locally
+*/
 $('.login').click(function() {
   console.log('clicked login');
+  //sign in using Google
   user.logInGoogle()
   .then( 
+    //set the user
     (result) => user.setUser(result.user.uid)
   ).then(
+    //get movies from firebase
     (myUID) => db.getMovies(myUID)
   ).then(
+    //store the movies from firebase locally within localStorage.js
     (movieData) => {
       storage.setLocalFB(movieData);
       let myMovies = storage.getLocalFB();
@@ -331,25 +358,15 @@ $('.login').click(function() {
 });
 
 
-
-
-
-
+/*
+Basic logout functions
+*/
 $('.logout').click(function() {
   console.log('clicked logout');
   user.logOut();
   console.log('user logged out');
 });
 
-// // Send newSong data to db then reload DOM with updated song data
-// $(document).on("click", ".watchlist", function() {
-//   let movieObj = movieObjToFirebase();
-//   db.addMovie(movieObj)
-//   .then( function(movieId){
-//     console.log(movieId);
-//    // loadMoviesToDOM();
-//   });
-// });
 
 },{"./db-interaction.js":1,"./dom-builder.js":2,"./firebaseConfig.js":4,"./localStorage.js":5,"./user.js":8}],7:[function(require,module,exports){
 "use strict";

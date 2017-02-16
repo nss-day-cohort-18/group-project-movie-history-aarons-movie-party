@@ -14,9 +14,13 @@ let firebase = require('./firebaseConfig'),
 // DB interaction using Firebase REST API
 // ****************************************
 
+
+/*
+Setting up an ajax request to http://www.omdbapi.com/ 
+and grabbing an array of movie objects
+*/
 function searchOMDB (movie) {
     console.log('inside search');
-    
     return new Promise ( function ( resolve, reject ) {
         $.ajax({
             url: movieAPI.MDBurl,
@@ -30,8 +34,9 @@ function searchOMDB (movie) {
     });
 }
 
+
 /*
- * Get the User's Movie List
+ * Get the User's Movie List from Firebase
  */
 function getMovies (user) {
     return new Promise(function(resolve, reject) {
@@ -45,6 +50,10 @@ function getMovies (user) {
     });
 }
 
+
+/* 
+adding movies to firebase
+*/
 function addMovie (movieFormObj) {
     console.log('add movie', movieFormObj);
     return new Promise ( function (resolve, reject ) {
@@ -60,6 +69,9 @@ function addMovie (movieFormObj) {
 }
 
 
+/*
+deleting movies from firebase
+*/
 function deleteMovie (movieId) {
     return new Promise ( function ( resolve, reject ) {
         $.ajax({
@@ -76,5 +88,4 @@ module.exports = {
     getMovies,
     addMovie,
     deleteMovie
-    // getMovie
 };
