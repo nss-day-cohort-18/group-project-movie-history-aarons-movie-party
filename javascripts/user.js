@@ -4,15 +4,6 @@ let firebase = require('./firebaseConfig'),
 	provider = new firebase.auth.GoogleAuthProvider(),
 	currentUser = null;
 
-// firebase.auth().onAuthStateChanged ( function(user) {
-// 	if (user) {
-// 		console.log("currentUser logged in: ", currentUser);
-// 		currentUser = user.uid;
-// 	} else {
-// 		currentUser = null;
-// 		console.log("currentUser not logged in");
-// 	}
-// });
 
 function logInGoogle() {
 	// console.log("This is the user: ", user);
@@ -24,12 +15,17 @@ function logOut() {
 }
 
 function getUser() {
-	console.log("This is the current user from user.js: ", currentUser);
+	console.log("This is the current user from user.getUser(): ", currentUser);
 	return currentUser;
 }
 
 function setUser(val) {
-	currentUser = val;
+	return new Promise ((resolve) => {
+		currentUser = val;
+		let myUserId = getUser();
+		console.log("my user in user.setUser(): ", myUserId);
+		resolve(myUserId);
+	});
 }
 
 

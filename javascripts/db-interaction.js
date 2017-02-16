@@ -14,25 +14,29 @@ let firebase = require('./firebaseConfig'),
 // DB interaction using Firebase REST API
 // ****************************************
 
+
+/*
+Setting up an ajax request to http://www.omdbapi.com/ 
+and grabbing an array of movie objects
+*/
 function searchOMDB (movie) {
     console.log('inside search');
-    
     return new Promise ( function ( resolve, reject ) {
         $.ajax({
             url: movieAPI.MDBurl,
             type: 'GET',
             data: { query: movie, append_to_response: "images", include_image_language: "en"}
         }).done(
-            function (movieData) {
-            resolve(movieData);
-        }).fail(function (error){
+            (movieData) => resolve(movieData)
+        ).fail(function (error){
             reject(error);
         });
     });
 }
 
+
 /*
- * Get the User's Movie List
+ * Get the User's Movie List from Firebase
  */
 function getMovies (user) {
     return new Promise(function(resolve, reject) {
@@ -46,6 +50,10 @@ function getMovies (user) {
     });
 }
 
+
+/* 
+adding movies to firebase
+*/
 function addMovie (movieFormObj) {
     console.log('add movie', movieFormObj);
     return new Promise ( function (resolve, reject ) {
@@ -61,6 +69,9 @@ function addMovie (movieFormObj) {
 }
 
 
+/*
+deleting movies from firebase
+*/
 function deleteMovie (movieId) {
     return new Promise ( function ( resolve, reject ) {
         $.ajax({
@@ -72,23 +83,9 @@ function deleteMovie (movieId) {
     });
 }
 
-// function getMovie (movieId) {
-//     return new Promise (function (resolve, reject) {
-//         $.ajax ({
-//             url: `https://moviehistory-e4b18.firebaseio.com/movies/${movieId}.json`,
-//         }).done(function (movieData) {
-//             resolve(movieData);
-//         }).fail( function (error) {
-//             reject (error);
-//         });
-//     });
-// }
-
-
 module.exports = {
     searchOMDB,
     getMovies,
     addMovie,
     deleteMovie
-    // getMovie
 };

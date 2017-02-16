@@ -3,6 +3,7 @@
 let cardMovieTemplate = function(movie) {
     return new Promise(function(resolve, reject) {
 
+        //setting up structure for apending items to DOM
         let cardItems = {
             movieId: movie.id,
             image: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : './dist/images/image-not-available.jpg',
@@ -12,6 +13,7 @@ let cardMovieTemplate = function(movie) {
             popularity: Math.round(movie.popularity),
             tracked: movie.uid ? 'movie-tracked' : ''
         };
+        //card-template
         let cardTemplate = `<div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
                               <div class="thumbnail ${cardItems.tracked}">
                                 <img src="${cardItems.image}" alt="Movie image ${cardItems.title}">

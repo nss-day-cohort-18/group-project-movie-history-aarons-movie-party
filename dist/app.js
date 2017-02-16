@@ -15,25 +15,29 @@ let firebase = require('./firebaseConfig'),
 // DB interaction using Firebase REST API
 // ****************************************
 
+
+/*
+Setting up an ajax request to http://www.omdbapi.com/ 
+and grabbing an array of movie objects
+*/
 function searchOMDB (movie) {
     console.log('inside search');
-    
     return new Promise ( function ( resolve, reject ) {
         $.ajax({
             url: movieAPI.MDBurl,
             type: 'GET',
             data: { query: movie, append_to_response: "images", include_image_language: "en"}
         }).done(
-            function (movieData) {
-            resolve(movieData);
-        }).fail(function (error){
+            (movieData) => resolve(movieData)
+        ).fail(function (error){
             reject(error);
         });
     });
 }
 
+
 /*
- * Get the User's Movie List
+ * Get the User's Movie List from Firebase
  */
 function getMovies (user) {
     return new Promise(function(resolve, reject) {
@@ -47,6 +51,10 @@ function getMovies (user) {
     });
 }
 
+
+/* 
+adding movies to firebase
+*/
 function addMovie (movieFormObj) {
     console.log('add movie', movieFormObj);
     return new Promise ( function (resolve, reject ) {
@@ -62,6 +70,9 @@ function addMovie (movieFormObj) {
 }
 
 
+/*
+deleting movies from firebase
+*/
 function deleteMovie (movieId) {
     return new Promise ( function ( resolve, reject ) {
         $.ajax({
@@ -73,32 +84,19 @@ function deleteMovie (movieId) {
     });
 }
 
-// function getMovie (movieId) {
-//     return new Promise (function (resolve, reject) {
-//         $.ajax ({
-//             url: `https://moviehistory-e4b18.firebaseio.com/movies/${movieId}.json`,
-//         }).done(function (movieData) {
-//             resolve(movieData);
-//         }).fail( function (error) {
-//             reject (error);
-//         });
-//     });
-// }
-
-
 module.exports = {
     searchOMDB,
     getMovies,
     addMovie,
     deleteMovie
-    // getMovie
 };
-},{"./firebaseConfig":4,"./movie-getter.js":6}],2:[function(require,module,exports){
+},{"./firebaseConfig":4,"./movie-getter.js":7}],2:[function(require,module,exports){
 'use strict';
 
 let cardMovieTemplate = function(movie) {
     return new Promise(function(resolve, reject) {
 
+        //setting up structure for apending items to DOM
         let cardItems = {
             movieId: movie.id,
             image: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : './dist/images/image-not-available.jpg',
@@ -108,6 +106,7 @@ let cardMovieTemplate = function(movie) {
             popularity: Math.round(movie.popularity),
             tracked: movie.uid ? 'movie-tracked' : ''
         };
+        //card-template
         let cardTemplate = `<div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
                               <div class="thumbnail ${cardItems.tracked}">
                                 <img src="${cardItems.image}" alt="Movie image ${cardItems.title}">
@@ -146,6 +145,9 @@ module.exports = {cardMovieTemplate};
 },{}],3:[function(require,module,exports){
 'use strict';
 
+/*
+This file is only used for storing and returning all of our important firebase information
+*/
 function getKey() {
   return {
     apiKey: "AIzaSyCLx0Z7SXMAY97o9dudtojVqKrr58rtwno",
@@ -158,6 +160,12 @@ module.exports = getKey;
 },{}],4:[function(require,module,exports){
 'use strict';
 
+
+/*
+Firebase Config
+This is connected to our fb-getter.js to retrieve appropriate information
+for handling all firebase requests
+*/
 let firebase = require('firebase/app'),
    fb = require('./fb-getter'),
    fbData = fb();
@@ -174,14 +182,110 @@ var config = {
 firebase.initializeApp(config);
 
 module.exports = firebase;
-},{"./fb-getter":3,"firebase/app":8,"firebase/auth":9,"firebase/database":10}],5:[function(require,module,exports){
+},{"./fb-getter":3,"firebase/app":9,"firebase/auth":10,"firebase/database":11}],5:[function(require,module,exports){
+"use strict";
+
+/*
+Arrays to hold both api returns as well as firebase returns
+*/
+let localFB = [];
+let localAPI = [];
+
+/*
+functions to return local arrays
+*/
+function getLocalFB() {
+	return localFB;
+}
+function getLocalAPI() {
+	return localAPI;
+}
+
+/*
+setting the local arrays from firebase and api
+*/
+function setLocalAPI(objARR) {
+	localAPI = objARR.results;
+}
+function setLocalFB(objARR) {
+    localFB = Object.values(objARR);
+}
+
+/*
+adding movies to our local firebase array
+*/
+function addLocalFB(moveobj) {
+    localFB.push(moveobj);
+}
+
+/*
+remove from local fb array
+*/
+function removeLocalFB(moveobj) {
+    for (var i = 0; i < localFB.length; i++) {
+        if (moveobj.id === localFB[i].id) {
+            localFB.splice(i, 1);
+        }
+    }
+}
+
+/*
+combining and filtering both firebase and api local arrays
+so there are no duplicates
+*/
+function concatFBAPI() {
+    console.log("Sort localFB and localAPI here");
+
+    // start with API call array of results
+    var comboArray = localAPI.concat(localFB);
+
+    // sort by title name
+    comboArray.sort(function(a, b) {
+  var nameA = a.title.toUpperCase();
+  var nameB = b.title.toUpperCase();
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+        return 0;
+    });
+
+    // if we find a duplicate and the duplicate has a uid do nothing
+    // if we find a duplicate without a uid, remove it
+    for (var n = 0; n < comboArray.length; n++) {
+
+        if (n !== (comboArray.length - 1) && comboArray[n].id === comboArray[n + 1].id && comboArray[n + 1].uid) {
+          console.log("2nd check has uid");
+        } else if (n !== (comboArray.length - 1) && comboArray[n].id === comboArray[n + 1].id && comboArray[n + 1].uid === undefined) {
+            comboArray.splice(n + 1, 1);
+        }
+        if (n !== 0 && comboArray[n].id === comboArray[n - 1].id && comboArray[n - 1].uid) {
+            console.log("2nd check has uid");
+        } else if (n !== 0 && comboArray[n].id === comboArray[n - 1].id && comboArray[n - 1].uid === undefined) {
+            comboArray.splice(n - 1, 1);
+        }
+        return comboArray;
+    }
+}
+
+module.exports = {setLocalAPI, addLocalFB, removeLocalFB, setLocalFB, concatFBAPI, getLocalAPI, getLocalFB};
+
+
+
+
+
+},{}],6:[function(require,module,exports){
 'use strict';
 
 let db = require('./db-interaction.js'),
-    templates = require('./dom-builder.js'),
-    movieTemplate = require('./dom-builder.js'),
-    user = require('./user.js'),
-    firebase = require('./firebaseConfig.js');
+   	templates = require('./dom-builder.js'),
+   	movieTemplate = require('./dom-builder.js'),
+   	user = require('./user.js'),
+   	firebase = require('./firebaseConfig.js'),
+    storage = require('./localStorage.js');
+
 
 /*
  This function is used to save information from the movie card
@@ -189,116 +293,129 @@ let db = require('./db-interaction.js'),
  saved within FB.
  */
 function movieObjToFirebase(movieObj) {
-    // return new Promise((resolve) => {
-    let movie = {
-        title: movieObj.original_title,
-        year: movieObj.release_date.slice(0, 4),
-        overview: movieObj.overview,
-        poster_path: movieObj.poster_path,
+  let movie = {
+    title: movieObj.original_title,
+    year: movieObj.release_date,
+    overview: movieObj.overview,
+    poster_path: movieObj.poster_path,
 
-        uid: user.getUser()
-    };
-    return movie;
+    uid: user.getUser()
+  };
+  return movie;
 }
 
-
-// function loadMoviesToDOM() {
-//   //console.log("Need to load some songs, Buddy");
-//   //Jordan and Aaron were trying to connect to firebase from here
-//   console.log("I am in loadMoviesToDom()");
-
-//   //then populate the DOM with movies
-//   // .then(function(movieObjToFirebase()){
-//   // });
-
-// }
-
+/* 
+Filters the search request so that you have the option to search 
+by keyword/title or by year no matter where they are at within the search
+*/
 let formControl = (submitValue) => {
-    return new Promise((resolve) => {
-        $('.card').remove();
-        let yearPattern = /[0-9]/g;
-        let searchValues = submitValue.split(" ");
-        let yearValues = [];
-        let keyWordValues = [];
-        for(var search = 0; search < searchValues.length; search++) {
-            if(searchValues[search].length === 4 && searchValues[search].match(yearPattern)) {
-                yearValues.push(searchValues[search]);
-            } else {
-                keyWordValues.push(searchValues[search]);
-            }
-        }
-        //go to firebase to search related movies
-        // readFirebase.readMovies();
-        //also go to movie load to compare movies with the api call
-
-        if(keyWordValues.length === 0) {
-            resolve(yearValues[0]);
-        } else {
-            if(yearValues.length === 0) {
-                resolve(submitValue);
-            } else {
-                resolve(keyWordValues.join(" "), yearValues[0]);
-            }
-        }
-    });
+  return new Promise((resolve) => {
+    //removes all movie cards from DOM
+    $('.card').remove();
+    //set up pattern to search for the year
+    let yearPattern = /[0-9]/g;
+    //split the submitValue by spaces
+    let searchValues = submitValue.split(" ");
+    //set arrays to store year values and regular words
+    let yearValues = [];
+    let keyWordValues = [];
+    //Loop through searchValues array and find either year or title/keyword
+    for (var search = 0; search < searchValues.length; search++) {
+      if (searchValues[search].length === 4 && searchValues[search].match(yearPattern)) {
+        yearValues.push(searchValues[search]);
+      } else {
+        keyWordValues.push(searchValues[search]);
+      }
+    }
+    
+    if (keyWordValues.length === 0) {
+      resolve(yearValues[0]);
+    } else {
+      if (yearValues.length === 0) {
+        resolve(submitValue);
+      } else {
+        resolve(keyWordValues.join(" "), yearValues[0]);
+      }
+    }
+  });
 };
 
 
-$('#searchmovies').keyup(function(event) {
-    if(event.which === 13) {
-        $('.movies-list').empty();
-        let movieSearchInput = $('#searchmovies').val();
-        console.log(movieSearchInput);
-        formControl(movieSearchInput).then(
-            (movieValue) => db.searchOMDB(movieSearchInput)
-        ).then(
-            (movieData) => {
-                console.log("This is the movie-data", movieData);
-                // db.addMovie(movieObjToFirebase(movieData.results[0]));
-                // console.log(templates.cardMovieTemplate);
-                movieData.results.forEach(function(movie) {
-                    templates.cardMovieTemplate(movie);
-                });
-                // templates.cardMovieTemplate(movieData.results[0]);
-            }
-        );
-    }
+/*
+takes the search input and filters it. From there it makes an api call, stores the api
+call, compares the api call to what is stored on our local firebase array, and sends the result to be
+printed to the DOM
+*/
+$('#searchmovies').keyup(function (event) {
+  //If it's the enter key..
+  if (event.which === 13) {
+    //empty movies-list container
+    $('.movies-list').empty();
+    //grab the value from the search
+    let movieSearchInput = $('#searchmovies').val();
+    console.log(movieSearchInput);
+
+    //send the result to be filtered
+    formControl(movieSearchInput).then(
+        //take the value to api request
+        (movieValue) => db.searchOMDB(movieSearchInput)
+      ).then( 
+        //with the movie data..
+        (movieData) => {
+          //store the data in our localAPI array
+          storage.setLocalAPI(movieData);
+          console.log("This is the movie data from the API: ", movieData);
+          console.log("This is the movie-data", storage.getLocalAPI());
+          //combine both the local API array and the localFB array
+          let combinedMoviesArray = storage.concatFBAPI();
+          console.log("These are my combined movies from main.js: ", combinedMoviesArray);
+          
+          //For each movie within the combined movie array, print it to the DOM
+          combinedMoviesArray.forEach(function(movie) {
+            templates.cardMovieTemplate(movie);
+          });
+        }
+      );
+  }
 });
 
 
+/*
+This function performs login tasks. Sign in using Google, makes a call to Firebase
+to store all movies from firebase locally
+*/
 $('.login').click(function() {
-    console.log('clicked login');
-    user.logInGoogle()
-        .then(
-            (result) => {
-                user.setUser(result.user.uid);
-                // $('#auth-btn').addClass('is-hidden');
-                // $('#logout=btn').removeClass('is-hidden');
-                let myUID = user.getUser();
-                console.log("myUID: ", myUID);
-                let myMovies = db.getMovies(myUID);
-                console.log(myMovies);
-            });
+  console.log('clicked login');
+  //sign in using Google
+  user.logInGoogle()
+  .then( 
+    //set the user
+    (result) => user.setUser(result.user.uid)
+  ).then(
+    //get movies from firebase
+    (myUID) => db.getMovies(myUID)
+  ).then(
+    //store the movies from firebase locally within localStorage.js
+    (movieData) => {
+      storage.setLocalFB(movieData);
+      let myMovies = storage.getLocalFB();
+      console.log("These are my movies ", myMovies);}
+    );
 });
 
 
+/*
+Basic logout functions
+*/
 $('.logout').click(function() {
-    console.log('clicked logout');
-    user.logOut();
-    console.log('user logged out');
+  console.log('clicked logout');
+  user.logOut();
+  console.log('user logged out');
 });
 
-// // Send newSong data to db then reload DOM with updated song data
-// $(document).on("click", ".watchlist", function() {
-//   let movieObj = movieObjToFirebase();
-//   db.addMovie(movieObj)
-//   .then( function(movieId){
-//     console.log(movieId);
-//    // loadMoviesToDOM();
-//   });
-// });
 
-},{"./db-interaction.js":1,"./dom-builder.js":2,"./firebaseConfig.js":4,"./user.js":7}],6:[function(require,module,exports){
+
+},{"./db-interaction.js":1,"./dom-builder.js":2,"./firebaseConfig.js":4,"./localStorage.js":5,"./user.js":8}],7:[function(require,module,exports){
 "use strict";
 
 // keeps the api key secret from prying eyes
@@ -310,22 +427,13 @@ function getURL() {
 }
 
 module.exports = getURL;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 let firebase = require('./firebaseConfig'),
 	provider = new firebase.auth.GoogleAuthProvider(),
 	currentUser = null;
 
-// firebase.auth().onAuthStateChanged ( function(user) {
-// 	if (user) {
-// 		console.log("currentUser logged in: ", currentUser);
-// 		currentUser = user.uid;
-// 	} else {
-// 		currentUser = null;
-// 		console.log("currentUser not logged in");
-// 	}
-// });
 
 function logInGoogle() {
 	// console.log("This is the user: ", user);
@@ -337,18 +445,23 @@ function logOut() {
 }
 
 function getUser() {
-	console.log("This is the current user from user.js: ", currentUser);
+	console.log("This is the current user from user.getUser(): ", currentUser);
 	return currentUser;
 }
 
 function setUser(val) {
-	currentUser = val;
+	return new Promise ((resolve) => {
+		currentUser = val;
+		let myUserId = getUser();
+		console.log("my user in user.setUser(): ", myUserId);
+		resolve(myUserId);
+	});
 }
 
 
 module.exports = {logInGoogle, logOut, getUser, setUser};
 
-},{"./firebaseConfig":4}],8:[function(require,module,exports){
+},{"./firebaseConfig":4}],9:[function(require,module,exports){
 (function (global){
 var firebase = (function(){
 /*! @license Firebase v3.6.9
@@ -384,7 +497,7 @@ return firebase;}).call(typeof global !== undefined ? global : typeof self !== u
 module.exports = firebase;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (global){
 var firebase = require('./app');
 (function(){
@@ -629,7 +742,7 @@ a,function(a,c){if("create"===a)try{c.auth()}catch(d){}});firebase.INTERNAL.exte
 module.exports = firebase.auth;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./app":8}],10:[function(require,module,exports){
+},{"./app":9}],11:[function(require,module,exports){
 (function (global){
 var firebase = require('./app');
 (function(){
@@ -897,4 +1010,4 @@ d;return d.Ya},{Reference:U,Query:X,Database:Se,enableLogging:xc,INTERNAL:Y,TEST
 module.exports = firebase.database;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./app":8}]},{},[5]);
+},{"./app":9}]},{},[6]);
