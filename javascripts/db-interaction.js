@@ -4,12 +4,7 @@
 let firebase = require('./firebaseConfig'),
         movieGetter = require('./movie-getter.js'),
         movieAPI = movieGetter();
-        // fb = firebase();
-/*
-    apiKey: 'AIzaSyAjNt10LaBGKk5edTtotKiduJmaX4JT4zo',
-    authDomain: 'moviehistory-e4b18.firebaseapp.com',
-    databaseURL: 'https://moviehistory-e4b18.firebaseio.com'
- */
+
 // ****************************************
 // DB interaction using Firebase REST API
 // ****************************************
@@ -19,13 +14,19 @@ let firebase = require('./firebaseConfig'),
 Setting up an ajax request to http://www.omdbapi.com/ 
 and grabbing an array of movie objects
 */
-function searchOMDB (movie) {
+function searchOMDB (movie, movieYear) {
     console.log('inside search');
     return new Promise ( function ( resolve, reject ) {
         $.ajax({
             url: movieAPI.MDBurl,
             type: 'GET',
-            data: { query: movie, append_to_response: "images", include_image_language: "en"}
+            data: { 
+                query: movie, 
+                append_to_response: "images", 
+                include_image_language: "en",
+                adult_movie: "false",
+                year: movieYear
+                }
         }).done(
             (movieData) => resolve(movieData)
         ).fail(function (error){
@@ -62,7 +63,7 @@ function addMovie (movieFormObj) {
             type: 'POST',
             data: JSON.stringify(movieFormObj),
             dataType: 'json'
-        }).done(function (movieId) {
+        }).done(function () {
             resolve();
         });
     });
@@ -83,9 +84,22 @@ function deleteMovie (movieId) {
     });
 }
 
+function editMovie(movieFormObj, index) {
+    return new Promise( function(resolve, reject){
+        $.ajax({
+            url: `https://movie-history-team-team.firebaseio.com/movies/${index}.json`,
+            type: 'PUT',
+            data: JSON.stringify(movieFormObj)
+        }).done( function(){
+            resolve();
+        });
+    });
+}
+
 module.exports = {
     searchOMDB,
     getMovies,
     addMovie,
-    deleteMovie
+    deleteMovie,
+    editMovie
 };

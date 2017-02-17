@@ -16,10 +16,10 @@ let db = require('./db-interaction.js'),
 function movieObjToFirebase(movieObj) {
   let movie = {
     title: movieObj.original_title,
-    year: movieObj.release_date,
+    release_date: movieObj.release_date,
     overview: movieObj.overview,
+    popularity: movieObj.popularity,
     poster_path: movieObj.poster_path,
-
     uid: user.getUser()
   };
   return movie;
@@ -93,8 +93,9 @@ $('#searchmovies').keyup(function (event) {
           
           //For each movie within the combined movie array, print it to the DOM
           combinedMoviesArray.forEach(function(movie) {
-            templates.cardMovieTemplate(movie);
+          templates.cardMovieTemplate(movie);
           });
+          makeEventListeners();
         }
       );
   }
@@ -133,4 +134,153 @@ $('.logout').click(function() {
   user.logOut();
   console.log('user logged out');
 });
+
+
+function makeEventListeners() {
+  // data from both calls to compare
+  var localAPI = storage.getLocalAPI(),
+      localFB = storage.getLocalFB();
+
+  // values to save
+  var updatedAPIObj = {};
+  var updatedFBObj = {};
+  var indexOfAPIObj;
+  var indexOfFBObj;
+
+  // events to monitor
+  var listenForEvent = false;
+  var removeEvent = false;
+  var addEvent = false;
+  var ratedEvent = false;
+  var deletedObj;
+  var addedObj;
+  var updatedObj;
+// event listener for highlighting movie cards
+  $(".thumbnail").click( function() {
+
+
+    // if class exists just remove class
+    if ($(this).hasClass("card-clicked") && !$(event.target).hasClass("track") && !$(event.target).hasClass("untrack") && !$(event.target).hasClass("glyphicon")) {
+      $(this).removeClass("card-clicked");
+
+        if (listenForEvent === true) {
+          if (removeEvent === true) {
+            db.deleteMovie(deletedObj.index);
+            removeEvent = false;
+          }
+          if (addEvent === true && ratedEvent !== true) {
+            db.addMovie(addedObj);
+            addEvent = false;
+          }
+          if (ratedEvent === true && addEvent !== true) {
+            db.editMovie(updatedObj, updatedObj.index);
+            ratedEvent = false;
+          }
+          if (addEvent === true && ratedEvent === true) {
+            db.addMovie(updatedObj);
+            addEvent = false;
+            ratedEvent = false;
+          }
+        }
+      listenForEvent = false;
+      console.log("ListenForEvent ", listenForEvent);
+    // if class doesn't exist, check for event
+    } else if (!$(this).hasClass("card-clicked") && !$(event.target).hasClass("track") && !$(event.target).hasClass("untrack") && !$(event.target).hasClass("glyphicon")) {
+
+        if (listenForEvent === true) {
+          if (removeEvent === true) {
+            db.deleteMovie(Number(deletedObj.index));
+            removeEvent = false;
+          }
+          if (addEvent === true && ratedEvent !== true) {
+            db.addMovie(addedObj);
+            addEvent = false;
+          }
+          if (ratedEvent === true && addEvent !== true) {
+            db.editMovie(updatedObj, Number(updatedObj.index));
+            ratedEvent = false;
+          }
+          if (addEvent === true && ratedEvent === true) {
+            db.addMovie(updatedObj);
+            addEvent = false;
+            ratedEvent = false;
+          }
+        }
+      //then remove class from prev and add class to current selected
+      $('div').removeClass("card-clicked");
+      $(this).addClass("card-clicked");
+      listenForEvent = true;
+      console.log("ListenForEvent ", listenForEvent);
+    }
+
+  // event listeners for once a movie is targeted
+    if (listenForEvent === true) {
+      updatedAPIObj = {};
+      updatedFBObj = {};
+
+      // finding currently selected localAPI object (may not exist)
+      for (var t = 0; t < localAPI.length; t++) {
+        if (localAPI[t].id == $(".card-clicked").attr("data-movieId")) {
+          updatedAPIObj = localAPI[t];
+          indexOfAPIObj = t;
+          break;
+        }
+      }
+      // finding currently selected localFB object (may not exist)
+      for (var l = 0; l < localFB.length; l++) {
+        if (localFB[l].id == $(".card-clicked").attr("data-movieId")) {
+          updatedFBObj = localFB[l];
+          indexOfFBObj = l;
+          break;
+        }
+      }
+      // removing from tracked
+      $(".card-clicked").find(".untrack").click(function () {
+        console.log("You clicked on untrack");
+        deletedObj = updatedFBObj;
+        removeEvent = true;
+        console.log("removeEvent ", removeEvent);
+        $(".card-clicked").removeClass("movie-tracked");
+        $(".card-clicked").removeClass("movie-rated");
+      });
+
+      // adding to tracked
+      $(".card-clicked").find(".track").click(function () {
+        console.log("You clicked on track");
+        updatedAPIObj.uid = user.getUser();
+        updatedAPIObj.watched = false;
+        updatedAPIObj.rating = 0;
+        localFB.push(updatedAPIObj);
+        addedObj = updatedAPIObj;
+        addEvent = true;
+        console.log("addEvent ", addEvent);
+        $(".card-clicked").addClass("movie-tracked");
+      });
+
+      // giving a rating
+      $(".card-clicked").find(".glyphicon").click(function () {
+        console.log("You clicked on a star");
+        if (addEvent === true) {
+          addedObj.watched = true;
+          addedObj.rating = $(this).attr("data-star");
+          updatedObj = addedObj;
+          ratedEvent = true;
+        } else {
+          updatedFBObj.watched = true;
+          updatedFBObj.rating = $(this).attr("data-star");
+          updatedObj = updatedFBObj;
+          localFB.splice(indexOfFBObj, 1, updatedFBObj);
+          ratedEvent = true;
+        }
+        console.log("ratedEvent ", ratedEvent);
+        $(".card-clicked").addClass("movie-rated");
+      });
+    }
+  });
+}
+
+
+
+
+
 

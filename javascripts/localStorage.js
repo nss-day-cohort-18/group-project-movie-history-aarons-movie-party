@@ -3,8 +3,10 @@
 /*
 Arrays to hold both api returns as well as firebase returns
 */
-let localFB = [];
-let localAPI = [];
+let localFB = [],
+		localAPI = [],
+		comboConcatArray = [],
+        localFBKeys = [];
 
 /*
 functions to return local arrays
@@ -15,6 +17,9 @@ function getLocalFB() {
 function getLocalAPI() {
 	return localAPI;
 }
+function getLocalComboArray() {
+	return comboConcatArray;
+}
 
 /*
 setting the local arrays from firebase and api
@@ -24,6 +29,11 @@ function setLocalAPI(objARR) {
 }
 function setLocalFB(objARR) {
     localFB = Object.values(objARR);
+    localFBKeys = Object.keys(objARR);
+    for (var i = 0; i < localFB.length; i++) {
+        localFB[i].index = localFBKeys[i];
+    }
+    console.log("should include index ", localFB);
 }
 
 /*
@@ -51,8 +61,18 @@ so there are no duplicates
 function concatFBAPI() {
     console.log("Sort localFB and localAPI here");
 
+   //filter localFB by search parameter
+    var filteredFBArray = [];
+    var searchInput = $('#searchmovies').val().toUpperCase();
+    for (var p = 0; p < localFB.length; p++) {
+    	var comparingTitle = localFB[p].title.toUpperCase();
+    	if (comparingTitle.includes(searchInput)) {
+    		filteredFBArray.push(localFB[p]);
+    	}
+    }
+
     // start with API call array of results
-    var comboArray = localAPI.concat(localFB);
+    var comboArray = localAPI.concat(filteredFBArray);
 
     // sort by title name
     comboArray.sort(function(a, b) {
@@ -81,11 +101,12 @@ function concatFBAPI() {
         } else if (n !== 0 && comboArray[n].id === comboArray[n - 1].id && comboArray[n - 1].uid === undefined) {
             comboArray.splice(n - 1, 1);
         }
-        return comboArray;
     }
+    comboConcatArray = comboArray;
+    return comboArray;
 }
 
-module.exports = {setLocalAPI, addLocalFB, removeLocalFB, setLocalFB, concatFBAPI, getLocalAPI, getLocalFB};
+module.exports = {setLocalAPI, getLocalComboArray, addLocalFB, removeLocalFB, setLocalFB, concatFBAPI, getLocalAPI, getLocalFB};
 
 
 
