@@ -5,12 +5,7 @@
 let firebase = require('./firebaseConfig'),
         movieGetter = require('./movie-getter.js'),
         movieAPI = movieGetter();
-        // fb = firebase();
-/*
-    apiKey: 'AIzaSyAjNt10LaBGKk5edTtotKiduJmaX4JT4zo',
-    authDomain: 'moviehistory-e4b18.firebaseapp.com',
-    databaseURL: 'https://moviehistory-e4b18.firebaseio.com'
- */
+
 // ****************************************
 // DB interaction using Firebase REST API
 // ****************************************
@@ -20,13 +15,19 @@ let firebase = require('./firebaseConfig'),
 Setting up an ajax request to http://www.omdbapi.com/ 
 and grabbing an array of movie objects
 */
-function searchOMDB (movie) {
+function searchOMDB (movie, movieYear) {
     console.log('inside search');
     return new Promise ( function ( resolve, reject ) {
         $.ajax({
             url: movieAPI.MDBurl,
             type: 'GET',
-            data: { query: movie, append_to_response: "images", include_image_language: "en"}
+            data: { 
+                query: movie, 
+                append_to_response: "images", 
+                include_image_language: "en",
+                adult_movie: "false",
+                year: movieYear
+                }
         }).done(
             (movieData) => resolve(movieData)
         ).fail(function (error){
@@ -63,7 +64,7 @@ function addMovie (movieFormObj) {
             type: 'POST',
             data: JSON.stringify(movieFormObj),
             dataType: 'json'
-        }).done(function (movieId) {
+        }).done(function () {
             resolve();
         });
     });
@@ -84,65 +85,100 @@ function deleteMovie (movieId) {
     });
 }
 
+function editMovie(movieFormObj, index) {
+    return new Promise( function(resolve, reject){
+        $.ajax({
+            url: `https://movie-history-team-team.firebaseio.com/movies/${index}.json`,
+            type: 'PUT',
+            data: JSON.stringify(movieFormObj)
+        }).done( function(){
+            resolve();
+        });
+    });
+}
+
 module.exports = {
     searchOMDB,
     getMovies,
     addMovie,
-    deleteMovie
+    deleteMovie,
+    editMovie
 };
-},{"./firebaseConfig":4,"./movie-getter.js":7}],2:[function(require,module,exports){
+},{"./firebaseConfig":5,"./movie-getter.js":8}],2:[function(require,module,exports){
+
 'use strict';
 
-let cardMovieTemplate = function(movie) {
-    return new Promise(function(resolve, reject) {
+let cardMovieTemplate = function(movie, counter) {
 
-        //setting up structure for apending items to DOM
-        let cardItems = {
-            movieId: movie.id,
-            image: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : './dist/images/image-not-available.jpg',
-            title: movie.title,
-            year: movie.release_date.slice(0, 4),
-            myRatings: movie.ratings,
-            popularity: Math.round(movie.popularity),
-            tracked: movie.uid ? 'movie-tracked' : ''
-        };
-        //card-template
-        let cardTemplate = `<div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
-                              <div class="thumbnail ${cardItems.tracked}">
-                                <img src="${cardItems.image}" alt="Movie image ${cardItems.title}">
-                                <div class="caption">
-                                  <h3>${cardItems.title}</h3>
-                                  <h3>${cardItems.year}</h3>
-                                  <h3>${cardItems.popularity}</h3>
-                                  <h3>${cardItems.myRatings}</h3>
-                                </div>
-                                <hr>
-                                <div class="group-star">
-                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="1"></span>
-                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="2"></span>
-                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="3"></span>
-                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="4"></span>
-                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="5"></span>
-                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="6"></span>
-                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="7"></span>
-                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="8"></span>
-                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="9"></span>
-                                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="10"></span>
-                                </div>
-                                <div class="checkbox">
-                                    <label><input type="checkbox" id="untrack">Untrack this movie</label>
-                                </div>
-                              </div>
-                            </div>`;
-        $('.movies-list').append(cardTemplate);
-        resolve(cardTemplate);
-        reject();
-    });
+    let createWrapper = () => {
+        let movieRow = document.createElement("div");
+        movieRow.classList.add("row");
+        movieRow.id = "row--" + counter;
+        $('.movies-list').append(movieRow);
+    }; 
+    if (counter % 3 === 0) {
+        createWrapper();
+    }
+    //setting up structure for apending items to DOM
+    let cardItems = {
+        movieId: movie.id,
+        image: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : './dist/images/image-not-available.jpg',
+        title: movie.title,
+        year: movie.uid ? movie.year : movie.release_date.slice(0, 4),
+        myRatings: movie.ratings ? movie.ratings : 'You have not watched the movie to rate!',
+        popularity: Math.round(movie.popularity),
+        tracked: movie.uid ? 'movie-tracked' : ''
+    };
+
+    let trackedDisplay = '';
+    if (movie.uid) {
+        trackedDisplay = 'Untrack this movie';
+    } else {
+        trackedDisplay = 'Have you watched this movie?';
+    }
+    //card-template
+    let cardTemplate = `<div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
+                          <div class="thumbnail ${cardItems.tracked}">
+                            <img src="${cardItems.image}" alt="Movie image ${cardItems.title}">
+                            <div class="caption">
+                              <h3>${cardItems.title}</h3>
+                              <h3>${cardItems.year}</h3>
+                              <h3>${cardItems.popularity}</h3>
+                              <h3>${cardItems.myRatings}</h3>
+                            </div>
+                            <hr>
+                            <div class="group-star">
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="1"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="2"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="3"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="4"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="5"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="6"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="7"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="8"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="9"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="10"></span>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" class="untrack">${trackedDisplay}</label>
+                            </div>
+                          </div>
+                        </div>`;
+    $('.movies-list .row').last().append(cardTemplate);
 };
 
 module.exports = {cardMovieTemplate};
-
 },{}],3:[function(require,module,exports){
+"use strict";
+
+let counter = 0;
+
+let getCounter = () => counter;
+let setCounterPlusOne = () => counter++;
+let resetCounter = () => {counter = 0;};
+
+module.exports = {getCounter, setCounterPlusOne, resetCounter};
+},{}],4:[function(require,module,exports){
 'use strict';
 
 /*
@@ -157,7 +193,7 @@ function getKey() {
 }
 
 module.exports = getKey;
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 
@@ -182,33 +218,44 @@ var config = {
 firebase.initializeApp(config);
 
 module.exports = firebase;
-},{"./fb-getter":3,"firebase/app":9,"firebase/auth":10,"firebase/database":11}],5:[function(require,module,exports){
+},{"./fb-getter":4,"firebase/app":10,"firebase/auth":11,"firebase/database":12}],6:[function(require,module,exports){
 "use strict";
 
 /*
 Arrays to hold both api returns as well as firebase returns
 */
-let localFB = [];
-let localAPI = [];
+
+let localFB = [],
+        localAPI = [],
+        comboConcatArray = [],
+        localFBKeys = [];
 
 /*
 functions to return local arrays
 */
 function getLocalFB() {
-	return localFB;
+    return localFB;
 }
 function getLocalAPI() {
-	return localAPI;
+    return localAPI;
+}
+function getLocalComboArray() {
+    return comboConcatArray;
 }
 
 /*
 setting the local arrays from firebase and api
 */
 function setLocalAPI(objARR) {
-	localAPI = objARR.results;
+    localAPI = objARR.results;
 }
 function setLocalFB(objARR) {
     localFB = Object.values(objARR);
+    localFBKeys = Object.keys(objARR);
+    for (var i = 0; i < localFB.length; i++) {
+        localFB[i].index = localFBKeys[i];
+    }
+    console.log("should include index ", localFB);
 }
 
 /*
@@ -235,14 +282,27 @@ so there are no duplicates
 */
 function concatFBAPI() {
     console.log("Sort localFB and localAPI here");
+    console.log("This is localFB: ", localFB);
+    console.log("This is localAPI: ", localAPI);
+
+
+   //filter localFB by search parameter
+    var filteredFBArray = [];
+    var searchInput = $('#searchmovies').val().toUpperCase();
+    for (var p = 0; p < localFB.length; p++) {
+        var comparingTitle = localFB[p].title.toUpperCase();
+        if (comparingTitle.includes(searchInput)) {
+            filteredFBArray.push(localFB[p]);
+        }
+    }
 
     // start with API call array of results
     var comboArray = localAPI.concat(localFB);
 
     // sort by title name
     comboArray.sort(function(a, b) {
-  var nameA = a.title.toUpperCase();
-  var nameB = b.title.toUpperCase();
+      var nameA = a.title.toUpperCase();
+      var nameB = b.title.toUpperCase();
       if (nameA < nameB) {
         return -1;
       }
@@ -266,25 +326,25 @@ function concatFBAPI() {
         } else if (n !== 0 && comboArray[n].id === comboArray[n - 1].id && comboArray[n - 1].uid === undefined) {
             comboArray.splice(n - 1, 1);
         }
-        return comboArray;
     }
+    comboConcatArray = comboArray;
+    return comboConcatArray;
 }
 
-module.exports = {setLocalAPI, addLocalFB, removeLocalFB, setLocalFB, concatFBAPI, getLocalAPI, getLocalFB};
+module.exports = {setLocalAPI, getLocalComboArray, addLocalFB, removeLocalFB, setLocalFB, concatFBAPI, getLocalAPI, getLocalFB};
 
 
 
-
-
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 let db = require('./db-interaction.js'),
-   	templates = require('./dom-builder.js'),
-   	movieTemplate = require('./dom-builder.js'),
-   	user = require('./user.js'),
-   	firebase = require('./firebaseConfig.js'),
-    storage = require('./localStorage.js');
+    templates = require('./dom-builder.js'),
+    movieTemplate = require('./dom-builder.js'),
+    user = require('./user.js'),
+    firebase = require('./firebaseConfig.js'),
+    storage = require('./localStorage.js'),
+    domRowCounter = require('./domRowCounter.js');
 
 
 /*
@@ -295,10 +355,10 @@ let db = require('./db-interaction.js'),
 function movieObjToFirebase(movieObj) {
   let movie = {
     title: movieObj.original_title,
-    year: movieObj.release_date,
+    release_date: movieObj.release_date,
     overview: movieObj.overview,
+    popularity: movieObj.popularity,
     poster_path: movieObj.poster_path,
-
     uid: user.getUser()
   };
   return movie;
@@ -346,37 +406,53 @@ takes the search input and filters it. From there it makes an api call, stores t
 call, compares the api call to what is stored on our local firebase array, and sends the result to be
 printed to the DOM
 */
+
+let pushMovies = () => {
+  removeAndAssignCurrentToggle(document.getElementsByClassName('all-toggle')[0]);
+  //empty movies-list container
+  $('.movies-list').empty();
+  //grab the value from the search
+  let movieSearchInput = $('#searchmovies').val();
+  console.log(movieSearchInput);
+
+  //send the result to be filtered
+  formControl(movieSearchInput).then(
+      //take the value to api request
+      (movieValue) => db.searchOMDB(movieSearchInput)
+    ).then( 
+      //with the movie data..
+      (movieData) => {
+        //store the data in our localAPI array
+        storage.setLocalAPI(movieData);
+        console.log("This is the movie data from the API: ", movieData);
+        console.log("This is the movie-data", storage.getLocalAPI());
+        //combine both the local API array and the localFB array
+        let combinedMoviesArray = storage.concatFBAPI();
+        console.log("These are my combined movies from main.js: ", combinedMoviesArray);
+        document.getElementById("searchmovies").value = '';
+        //For each movie within the combined movie array, print it to the DOM
+        combinedMoviesArray.forEach(function(movie) {
+          let counter = domRowCounter.getCounter();
+          templates.cardMovieTemplate(movie, counter);
+          domRowCounter.setCounterPlusOne();
+        });
+      }
+    ).then(
+      () => {
+        domRowCounter.resetCounter();
+        makeEventListeners();
+    });
+};
+
 $('#searchmovies').keyup(function (event) {
   //If it's the enter key..
   if (event.which === 13) {
-    //empty movies-list container
-    $('.movies-list').empty();
-    //grab the value from the search
-    let movieSearchInput = $('#searchmovies').val();
-    console.log(movieSearchInput);
-
-    //send the result to be filtered
-    formControl(movieSearchInput).then(
-        //take the value to api request
-        (movieValue) => db.searchOMDB(movieSearchInput)
-      ).then( 
-        //with the movie data..
-        (movieData) => {
-          //store the data in our localAPI array
-          storage.setLocalAPI(movieData);
-          console.log("This is the movie data from the API: ", movieData);
-          console.log("This is the movie-data", storage.getLocalAPI());
-          //combine both the local API array and the localFB array
-          let combinedMoviesArray = storage.concatFBAPI();
-          console.log("These are my combined movies from main.js: ", combinedMoviesArray);
-          
-          //For each movie within the combined movie array, print it to the DOM
-          combinedMoviesArray.forEach(function(movie) {
-            templates.cardMovieTemplate(movie);
-          });
-        }
-      );
+    pushMovies();
   }
+});
+
+$('.form-control-btn').click(function(event) {
+  pushMovies();
 });
 
 
@@ -414,8 +490,221 @@ $('.logout').click(function() {
 });
 
 
+/*
+event listeners for the tracked, untracked, and watched toggles
+*/
 
-},{"./db-interaction.js":1,"./dom-builder.js":2,"./firebaseConfig.js":4,"./localStorage.js":5,"./user.js":8}],7:[function(require,module,exports){
+let removeAndAssignCurrentToggle = (myToggle) => {
+  document.getElementsByClassName('current-toggle')[0].classList.remove('btn-primary');
+  document.getElementsByClassName('current-toggle')[0].classList.remove('current-toggle');
+  myToggle.classList.add('current-toggle');
+  myToggle.classList.add('btn-primary');
+};
+
+
+$('.all-toggle').click(function(event) {
+  removeAndAssignCurrentToggle(this);
+  let comboArray = storage.getLocalComboArray();
+  $('.movies-list').empty();
+  comboArray.forEach(function(movie) {
+    let counter = domRowCounter.getCounter();
+    templates.cardMovieTemplate(movie, counter);
+    domRowCounter.setCounterPlusOne();
+  });
+  domRowCounter.resetCounter();
+});
+
+
+$('.untracked-toggle').click(function(event) {
+  removeAndAssignCurrentToggle(this);
+  let comboArray = storage.getLocalComboArray();
+  $('.movies-list').empty();
+  comboArray.forEach(function(movie) {
+    if (!(movie.hasOwnProperty('uid'))) {
+      let counter = domRowCounter.getCounter();
+      templates.cardMovieTemplate(movie, counter);
+      domRowCounter.setCounterPlusOne();
+    }
+  });
+  domRowCounter.resetCounter();
+});
+
+
+$('.tracked-toggle').click(function(event) {
+  removeAndAssignCurrentToggle(this);
+  let comboArray = storage.getLocalComboArray();
+  $('.movies-list').empty();
+  comboArray.forEach(function(movie) {
+    if (movie.hasOwnProperty('uid')) {
+      let counter = domRowCounter.getCounter();
+      templates.cardMovieTemplate(movie, counter);
+      domRowCounter.setCounterPlusOne();
+    }
+  });
+  domRowCounter.resetCounter();
+});
+
+
+$('.watched-toggle').click(function(event) {
+  removeAndAssignCurrentToggle(this);
+  let comboArray = storage.getLocalComboArray();
+  $('.movies-list').empty();
+  comboArray.forEach(function(movie) {
+    if (movie.hasOwnProperty('uid') && movie.watched) {
+      let counter = domRowCounter.getCounter();
+      templates.cardMovieTemplate(movie, counter);
+      domRowCounter.setCounterPlusOne();
+    }
+  });
+  domRowCounter.resetCounter();
+});
+
+function makeEventListeners() {
+  // data from both calls to compare
+  var localAPI = storage.getLocalAPI(),
+      localFB = storage.getLocalFB();
+
+  // values to save
+  var updatedAPIObj = {};
+  var updatedFBObj = {};
+  var indexOfAPIObj;
+  var indexOfFBObj;
+
+  // events to monitor
+  var listenForEvent = false;
+  var removeEvent = false;
+  var addEvent = false;
+  var ratedEvent = false;
+  var deletedObj;
+  var addedObj;
+  var updatedObj;
+// event listener for highlighting movie cards
+  $(".thumbnail").click( function() {
+
+    console.log("Thumbnail is being clicked.");
+
+
+    // if class exists just remove class
+    if ($(this).hasClass("card-clicked") && !$(event.target).hasClass("track") && !$(event.target).hasClass("untrack") && !$(event.target).hasClass("glyphicon")) {
+      $(this).removeClass("card-clicked");
+
+        if (listenForEvent === true) {
+          if (removeEvent === true) {
+            db.deleteMovie(deletedObj.index);
+            removeEvent = false;
+          }
+          if (addEvent === true && ratedEvent !== true) {
+            db.addMovie(addedObj);
+            addEvent = false;
+          }
+          if (ratedEvent === true && addEvent !== true) {
+            db.editMovie(updatedObj, updatedObj.index);
+            ratedEvent = false;
+          }
+          if (addEvent === true && ratedEvent === true) {
+            db.addMovie(updatedObj);
+            addEvent = false;
+            ratedEvent = false;
+          }
+        }
+      listenForEvent = false;
+      console.log("ListenForEvent ", listenForEvent);
+    // if class doesn't exist, check for event
+    } else if (!$(this).hasClass("card-clicked") && !$(event.target).hasClass("track") && !$(event.target).hasClass("untrack") && !$(event.target).hasClass("glyphicon")) {
+
+        if (listenForEvent === true) {
+          if (removeEvent === true) {
+            db.deleteMovie(Number(deletedObj.index));
+            removeEvent = false;
+          }
+          if (addEvent === true && ratedEvent !== true) {
+            db.addMovie(addedObj);
+            addEvent = false;
+          }
+          if (ratedEvent === true && addEvent !== true) {
+            db.editMovie(updatedObj, Number(updatedObj.index));
+            ratedEvent = false;
+          }
+          if (addEvent === true && ratedEvent === true) {
+            db.addMovie(updatedObj);
+            addEvent = false;
+            ratedEvent = false;
+          }
+        }
+      //then remove class from prev and add class to current selected
+      $('div').removeClass("card-clicked");
+      $(this).addClass("card-clicked");
+      listenForEvent = true;
+      console.log("ListenForEvent ", listenForEvent);
+    }
+
+  // event listeners for once a movie is targeted
+    if (listenForEvent === true) {
+      updatedAPIObj = {};
+      updatedFBObj = {};
+
+      // finding currently selected localAPI object (may not exist)
+      for (var t = 0; t < localAPI.length; t++) {
+        if (localAPI[t].id == $(".card-clicked").attr("data-movieId")) {
+          updatedAPIObj = localAPI[t];
+          indexOfAPIObj = t;
+          break;
+        }
+      }
+      // finding currently selected localFB object (may not exist)
+      for (var l = 0; l < localFB.length; l++) {
+        if (localFB[l].id == $(".card-clicked").attr("data-movieId")) {
+          updatedFBObj = localFB[l];
+          indexOfFBObj = l;
+          break;
+        }
+      }
+      // removing from tracked
+      $(".card-clicked").find(".untrack").click(function () {
+        console.log("You clicked on untrack");
+        deletedObj = updatedFBObj;
+        removeEvent = true;
+        console.log("removeEvent ", removeEvent);
+        $(".card-clicked").removeClass("movie-tracked");
+        $(".card-clicked").removeClass("movie-rated");
+      });
+
+      // adding to tracked
+      $(".card-clicked").find(".track").click(function () {
+        console.log("You clicked on track");
+        updatedAPIObj.uid = user.getUser();
+        updatedAPIObj.watched = false;
+        updatedAPIObj.rating = 0;
+        localFB.push(updatedAPIObj);
+        addedObj = updatedAPIObj;
+        addEvent = true;
+        console.log("addEvent ", addEvent);
+        $(".card-clicked").addClass("movie-tracked");
+      });
+
+      // giving a rating
+      $(".card-clicked").find(".glyphicon").click(function () {
+        console.log("You clicked on a star");
+        if (addEvent === true) {
+          addedObj.watched = true;
+          addedObj.rating = $(this).attr("data-star");
+          updatedObj = addedObj;
+          ratedEvent = true;
+        } else {
+          updatedFBObj.watched = true;
+          updatedFBObj.rating = $(this).attr("data-star");
+          updatedObj = updatedFBObj;
+          localFB.splice(indexOfFBObj, 1, updatedFBObj);
+          ratedEvent = true;
+        }
+        console.log("ratedEvent ", ratedEvent);
+        $(".card-clicked").addClass("movie-rated");
+      });
+    }
+  });
+}
+
+},{"./db-interaction.js":1,"./dom-builder.js":2,"./domRowCounter.js":3,"./firebaseConfig.js":5,"./localStorage.js":6,"./user.js":9}],8:[function(require,module,exports){
 "use strict";
 
 // keeps the api key secret from prying eyes
@@ -427,7 +716,7 @@ function getURL() {
 }
 
 module.exports = getURL;
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 let firebase = require('./firebaseConfig'),
@@ -461,7 +750,7 @@ function setUser(val) {
 
 module.exports = {logInGoogle, logOut, getUser, setUser};
 
-},{"./firebaseConfig":4}],9:[function(require,module,exports){
+},{"./firebaseConfig":5}],10:[function(require,module,exports){
 (function (global){
 var firebase = (function(){
 /*! @license Firebase v3.6.9
@@ -497,7 +786,7 @@ return firebase;}).call(typeof global !== undefined ? global : typeof self !== u
 module.exports = firebase;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 (function (global){
 var firebase = require('./app');
 (function(){
@@ -742,7 +1031,7 @@ a,function(a,c){if("create"===a)try{c.auth()}catch(d){}});firebase.INTERNAL.exte
 module.exports = firebase.auth;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./app":9}],11:[function(require,module,exports){
+},{"./app":10}],12:[function(require,module,exports){
 (function (global){
 var firebase = require('./app');
 (function(){
@@ -1010,4 +1299,4 @@ d;return d.Ya},{Reference:U,Query:X,Database:Se,enableLogging:xc,INTERNAL:Y,TEST
 module.exports = firebase.database;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./app":9}]},{},[6]);
+},{"./app":10}]},{},[7]);

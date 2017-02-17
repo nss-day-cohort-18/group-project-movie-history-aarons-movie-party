@@ -1,11 +1,12 @@
 'use strict';
 
 let db = require('./db-interaction.js'),
-   	templates = require('./dom-builder.js'),
-   	movieTemplate = require('./dom-builder.js'),
-   	user = require('./user.js'),
-   	firebase = require('./firebaseConfig.js'),
-    storage = require('./localStorage.js');
+    templates = require('./dom-builder.js'),
+    movieTemplate = require('./dom-builder.js'),
+    user = require('./user.js'),
+    firebase = require('./firebaseConfig.js'),
+    storage = require('./localStorage.js'),
+    domRowCounter = require('./domRowCounter.js');
 
 
 /*
@@ -67,38 +68,53 @@ takes the search input and filters it. From there it makes an api call, stores t
 call, compares the api call to what is stored on our local firebase array, and sends the result to be
 printed to the DOM
 */
+
+let pushMovies = () => {
+  removeAndAssignCurrentToggle(document.getElementsByClassName('all-toggle')[0]);
+  //empty movies-list container
+  $('.movies-list').empty();
+  //grab the value from the search
+  let movieSearchInput = $('#searchmovies').val();
+  console.log(movieSearchInput);
+
+  //send the result to be filtered
+  formControl(movieSearchInput).then(
+      //take the value to api request
+      (movieValue) => db.searchOMDB(movieSearchInput)
+    ).then( 
+      //with the movie data..
+      (movieData) => {
+        //store the data in our localAPI array
+        storage.setLocalAPI(movieData);
+        console.log("This is the movie data from the API: ", movieData);
+        console.log("This is the movie-data", storage.getLocalAPI());
+        //combine both the local API array and the localFB array
+        let combinedMoviesArray = storage.concatFBAPI();
+        console.log("These are my combined movies from main.js: ", combinedMoviesArray);
+        document.getElementById("searchmovies").value = '';
+        //For each movie within the combined movie array, print it to the DOM
+        combinedMoviesArray.forEach(function(movie) {
+          let counter = domRowCounter.getCounter();
+          templates.cardMovieTemplate(movie, counter);
+          domRowCounter.setCounterPlusOne();
+        });
+      }
+    ).then(
+      () => {
+        domRowCounter.resetCounter();
+        makeEventListeners();
+    });
+};
+
 $('#searchmovies').keyup(function (event) {
   //If it's the enter key..
   if (event.which === 13) {
-    //empty movies-list container
-    $('.movies-list').empty();
-    //grab the value from the search
-    let movieSearchInput = $('#searchmovies').val();
-    console.log(movieSearchInput);
-
-    //send the result to be filtered
-    formControl(movieSearchInput).then(
-        //take the value to api request
-        (movieValue) => db.searchOMDB(movieSearchInput)
-      ).then( 
-        //with the movie data..
-        (movieData) => {
-          //store the data in our localAPI array
-          storage.setLocalAPI(movieData);
-          console.log("This is the movie data from the API: ", movieData);
-          console.log("This is the movie-data", storage.getLocalAPI());
-          //combine both the local API array and the localFB array
-          let combinedMoviesArray = storage.concatFBAPI();
-          console.log("These are my combined movies from main.js: ", combinedMoviesArray);
-          
-          //For each movie within the combined movie array, print it to the DOM
-          combinedMoviesArray.forEach(function(movie) {
-          templates.cardMovieTemplate(movie);
-          });
-          makeEventListeners();
-        }
-      );
+    pushMovies();
   }
+});
+
+$('.form-control-btn').click(function(event) {
+  pushMovies();
 });
 
 
@@ -136,6 +152,75 @@ $('.logout').click(function() {
 });
 
 
+/*
+event listeners for the tracked, untracked, and watched toggles
+*/
+
+let removeAndAssignCurrentToggle = (myToggle) => {
+  document.getElementsByClassName('current-toggle')[0].classList.remove('btn-primary');
+  document.getElementsByClassName('current-toggle')[0].classList.remove('current-toggle');
+  myToggle.classList.add('current-toggle');
+  myToggle.classList.add('btn-primary');
+};
+
+
+$('.all-toggle').click(function(event) {
+  removeAndAssignCurrentToggle(this);
+  let comboArray = storage.getLocalComboArray();
+  $('.movies-list').empty();
+  comboArray.forEach(function(movie) {
+    let counter = domRowCounter.getCounter();
+    templates.cardMovieTemplate(movie, counter);
+    domRowCounter.setCounterPlusOne();
+  });
+  domRowCounter.resetCounter();
+});
+
+
+$('.untracked-toggle').click(function(event) {
+  removeAndAssignCurrentToggle(this);
+  let comboArray = storage.getLocalComboArray();
+  $('.movies-list').empty();
+  comboArray.forEach(function(movie) {
+    if (!(movie.hasOwnProperty('uid'))) {
+      let counter = domRowCounter.getCounter();
+      templates.cardMovieTemplate(movie, counter);
+      domRowCounter.setCounterPlusOne();
+    }
+  });
+  domRowCounter.resetCounter();
+});
+
+
+$('.tracked-toggle').click(function(event) {
+  removeAndAssignCurrentToggle(this);
+  let comboArray = storage.getLocalComboArray();
+  $('.movies-list').empty();
+  comboArray.forEach(function(movie) {
+    if (movie.hasOwnProperty('uid')) {
+      let counter = domRowCounter.getCounter();
+      templates.cardMovieTemplate(movie, counter);
+      domRowCounter.setCounterPlusOne();
+    }
+  });
+  domRowCounter.resetCounter();
+});
+
+
+$('.watched-toggle').click(function(event) {
+  removeAndAssignCurrentToggle(this);
+  let comboArray = storage.getLocalComboArray();
+  $('.movies-list').empty();
+  comboArray.forEach(function(movie) {
+    if (movie.hasOwnProperty('uid') && movie.watched) {
+      let counter = domRowCounter.getCounter();
+      templates.cardMovieTemplate(movie, counter);
+      domRowCounter.setCounterPlusOne();
+    }
+  });
+  domRowCounter.resetCounter();
+});
+
 function makeEventListeners() {
   // data from both calls to compare
   var localAPI = storage.getLocalAPI(),
@@ -157,6 +242,8 @@ function makeEventListeners() {
   var updatedObj;
 // event listener for highlighting movie cards
   $(".thumbnail").click( function() {
+
+    console.log("Thumbnail is being clicked.");
 
 
     // if class exists just remove class
@@ -278,9 +365,3 @@ function makeEventListeners() {
     }
   });
 }
-
-
-
-
-
-

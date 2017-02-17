@@ -3,29 +3,30 @@
 /*
 Arrays to hold both api returns as well as firebase returns
 */
+
 let localFB = [],
-		localAPI = [],
-		comboConcatArray = [],
+        localAPI = [],
+        comboConcatArray = [],
         localFBKeys = [];
 
 /*
 functions to return local arrays
 */
 function getLocalFB() {
-	return localFB;
+    return localFB;
 }
 function getLocalAPI() {
-	return localAPI;
+    return localAPI;
 }
 function getLocalComboArray() {
-	return comboConcatArray;
+    return comboConcatArray;
 }
 
 /*
 setting the local arrays from firebase and api
 */
 function setLocalAPI(objARR) {
-	localAPI = objARR.results;
+    localAPI = objARR.results;
 }
 function setLocalFB(objARR) {
     localFB = Object.values(objARR);
@@ -60,24 +61,27 @@ so there are no duplicates
 */
 function concatFBAPI() {
     console.log("Sort localFB and localAPI here");
+    console.log("This is localFB: ", localFB);
+    console.log("This is localAPI: ", localAPI);
+
 
    //filter localFB by search parameter
     var filteredFBArray = [];
     var searchInput = $('#searchmovies').val().toUpperCase();
     for (var p = 0; p < localFB.length; p++) {
-    	var comparingTitle = localFB[p].title.toUpperCase();
-    	if (comparingTitle.includes(searchInput)) {
-    		filteredFBArray.push(localFB[p]);
-    	}
+        var comparingTitle = localFB[p].title.toUpperCase();
+        if (comparingTitle.includes(searchInput)) {
+            filteredFBArray.push(localFB[p]);
+        }
     }
 
     // start with API call array of results
-    var comboArray = localAPI.concat(filteredFBArray);
+    var comboArray = localAPI.concat(localFB);
 
     // sort by title name
     comboArray.sort(function(a, b) {
-  var nameA = a.title.toUpperCase();
-  var nameB = b.title.toUpperCase();
+      var nameA = a.title.toUpperCase();
+      var nameB = b.title.toUpperCase();
       if (nameA < nameB) {
         return -1;
       }
@@ -103,11 +107,9 @@ function concatFBAPI() {
         }
     }
     comboConcatArray = comboArray;
-    return comboArray;
+    return comboConcatArray;
 }
 
 module.exports = {setLocalAPI, getLocalComboArray, addLocalFB, removeLocalFB, setLocalFB, concatFBAPI, getLocalAPI, getLocalFB};
-
-
 
 
