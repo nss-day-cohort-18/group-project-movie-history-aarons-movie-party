@@ -1,10 +1,13 @@
 'use strict';
 
+/*
+This file is only used for storing and returning all of our important firebase information
+*/
 function getKey() {
   return {
-    apiKey: 'AIzaSyAjNt10LaBGKk5edTtotKiduJmaX4JT4zo',
-    authDomain: 'moviehistory-e4b18.firebaseapp.com',
-    databaseURL: 'https://moviehistory-e4b18.firebaseio.com'
+    apiKey: "AIzaSyCLx0Z7SXMAY97o9dudtojVqKrr58rtwno",
+    authDomain: "movie-history-team-team.firebaseapp.com",
+    databaseURL: "https://movie-history-team-team.firebaseio.com"
   };
 }
 

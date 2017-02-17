@@ -1,35 +1,63 @@
+
 'use strict';
-// this builds to DOM
-function makeMovieList (movie) {
-	var movierow = document.getElementById('movierow');
-	for (var key in movie) {
-		let movieList = movie[key];
-		for (var x in movieList) {
-			var currentMovie = movieList[x];
-			movierow.innerHTML += 
-							`
 
-							<div class="mainmoviecard col-md-4">
-							<div id="div--${currentMovie.id}" class="moviecard">
-								<h4>${currentMovie.title}</h4>
-								<h5>${currentMovie.release_date}</h5>
-								<section>${currentMovie.overview}</section>
-							</div>
-							<section class="moveleft"><a href="#" class="watchlist" id="link--${currentMovie.id}">
-							Add to Watchlist</a></section></div>`;
-					// event.current target is on ahref
-					// index.slice 
-		}
-		let cardContainer = document.getElementsByClassName("mainmoviecard");
-		for (var i = 0; i < cardContainer.length; i++) {
- 		 cardContainer[i].addEventListener('click', myFunction);
-		}
+let cardMovieTemplate = function(movie, counter) {
 
-	}
+    let createWrapper = () => {
+        let movieRow = document.createElement("div");
+        movieRow.classList.add("row");
+        movieRow.id = "row--" + counter;
+        $('.movies-list').append(movieRow);
+    }; 
+    if (counter % 3 === 0) {
+        createWrapper();
+    }
+    //setting up structure for apending items to DOM
+    let cardItems = {
+        movieId: movie.id,
+        image: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : './dist/images/image-not-available.jpg',
+        title: movie.title,
+        year: movie.uid ? movie.year : movie.release_date.slice(0, 4),
+        myRatings: movie.ratings ? movie.ratings : 'You have not watched the movie to rate!',
+        popularity: Math.round(movie.popularity),
+        tracked: movie.uid ? 'movie-tracked' : ''
+    };
 
-}
+    let trackedDisplay = '';
+    if (movie.uid) {
+        trackedDisplay = 'Untrack this movie';
+    } else {
+        trackedDisplay = 'Have you watched this movie?';
+    }
+    //card-template
+    let cardTemplate = `<div class="col-sm-6 col-md-4" data-movieId="${cardItems.movieId}">
+                          <div class="thumbnail ${cardItems.tracked}">
+                            <img src="${cardItems.image}" alt="Movie image ${cardItems.title}">
+                            <div class="caption">
+                              <h3>${cardItems.title}</h3>
+                              <h3>${cardItems.year}</h3>
+                              <h3>${cardItems.popularity}</h3>
+                              <h3>${cardItems.myRatings}</h3>
+                            </div>
+                            <hr>
+                            <div class="group-star">
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="1"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="2"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="3"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="4"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="5"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="6"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="7"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="8"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="9"></span>
+                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" data-star="10"></span>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" class="untrack">${trackedDisplay}</label>
+                            </div>
+                          </div>
+                        </div>`;
+    $('.movies-list .row').last().append(cardTemplate);
+};
 
-
-
-
-module.exports = {makeMovieList, myFunction};
+module.exports = {cardMovieTemplate};

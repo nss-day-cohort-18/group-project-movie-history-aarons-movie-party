@@ -1,76 +1,97 @@
-nav {
-	margin-top: 30px;
-	border: 1px solid grey;
-	border-radius: 3px;
+.my-container, .filter-container {
+    margin: 1em auto;
 }
 
-nav li {
-	list-style-type: none;
-	display: inline-block;
-	padding-left: .5em;
+.glyphicon {
+    font-size: 2em;
 }
 
-a {
-	display: inline-block;
-
-}  
-
-.navbar-right {
-	margin-right: 3em;
+#ex1Slider .slider-selection {
+    background: #BABABA;
 }
 
-.navbar-left {
-	margin-left: 1em;
+.card-clicked {
+    background-color: lightblue;
+    border: 1px dotted black;
 }
 
-.navbar-right,
-.navbar-left {
-	padding-top: 2%;
-	padding-bottom: 2%;
+.movie-tracked {
+    background-color: lightgray;
+    border: 1px solid darkgray;
 }
+/*nav {*/
+/*margin-top: 30px;*/
+/*border: 1px solid grey;*/
+/*border-radius: 3px;*/
+/*}*/
 
-input[type="text"] {
-	height: 2em;
-	border: 2px solid black;
-	border-radius: 3px;
-	padding: .8em;
-	margin-left: 10px;
-	display: inline;
-	width: 40em;
-	max-width: 90%;
-}
+/*nav li {*/
+/*list-style-type: none;*/
+/*display: inline-block;*/
+/*padding-left: .5em;*/
+/*}*/
 
-#filterButtonContainer {
-	margin: 1.5em 0 1.5em 0 !important;
-	padding: 0 !important;
-}
+/*a {*/
+/*display: inline-block;*/
 
-.filterButtons {
-	background-color: white;
-	margin: 0 !important;
-	border-radius: 3px;
+/*}  */
 
-}
+/*.navbar-right {*/
+/*margin-right: 3em;*/
+/*}*/
 
-.filterButtons:hover {
-	background-color: lightgreen;
-}
+/*.navbar-left {*/
+/*margin-left: 1em;*/
+/*}*/
 
-.filterButtons:selected {
-	background-color: grey;
-}
+/*.navbar-right,*/
+/*.navbar-left {*/
+/*padding-top: 2%;*/
+/*padding-bottom: 2%;*/
+/*}*/
 
-.moviecard {
-	background-color: lightblue;
-	padding: 10px;
-	margin: 10px;
-	overflow: scroll;
-	height: 200px;
-	border: 2px solid black;
-	font-size: 0.8em;
-}
+/*input[type="text"] {*/
+/*height: 2em;*/
+/*border: 2px solid black;*/
+/*border-radius: 3px;*/
+/*padding: .8em;*/
+/*margin-left: 10px;*/
+/*display: inline;*/
+/*width: 40em;*/
+/*max-width: 90%;*/
+/*}*/
 
-.moveleft {
-	margin-left: 30px;
-}
+/*#filterButtonContainer {*/
+/*margin: 1.5em 0 1.5em 0 !important;*/
+/*padding: 0 !important;*/
+/*}*/
+
+/*.filterButtons {*/
+/*background-color: white;*/
+/*margin: 0 !important;*/
+/*border-radius: 3px;*/
+
+/*}*/
+
+/*.filterButtons:hover {*/
+/*background-color: lightgreen;*/
+/*}*/
+
+/*.filterButtons:selected {*/
+/*background-color: grey;*/
+/*}*/
+
+/*.moviecard {*/
+/*background-color: lightblue;*/
+/*padding: 10px;*/
+/*margin: 10px;*/
+/*overflow: scroll;*/
+/*height: 200px;*/
+/*border: 2px solid black;*/
+/*font-size: 0.8em;*/
+/*}*/
+
+/*.moveleft {*/
+/*margin-left: 30px;*/
+/*}*/
 
